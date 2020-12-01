@@ -1,56 +1,63 @@
 import java.io.IOException;
-import java.util.Scanner;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.Timer;
-import java.util.TimerTask;
-
-
+import java.util.*;
 
 
 public class Main {
     static int interval;
     static Timer timer;
+    static int counter = 0;
 
 
     public static void main(String[] args) throws IOException {
-        Scanner name = new Scanner(System.in);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        String roundName1 = "Right Question";
+        Scanner scanner = new Scanner(System.in);
+        String userName;
+        ArrayList<String> roundTypes = new ArrayList<>();
+        roundTypes.add("Μουσική");
+        roundTypes.add("Επιστίμη");
+        Player p[] = new Player[2];
+        String roundName1 = "Right Answer";
         String roundName2 = "Betting";
 
         System.out.println("Hello, let's play Buzz!");
         System.out.println("Press enter to continue...");try{System.in.read();}catch(Exception e){e.printStackTrace();}
 
-        System.out.print("Enter Username : ");
-        String userNam = name.nextLine();
-        String userName = name.nextLine();
+        System.out.println("Enter Number of Players : ");
+        int playerCount = scanner.nextInt();
 
-        System.out.println("Hello " + userName + ", are you ready to play? \nPress Enter to start playing Buzz or press Esc to exit.\n\n"); try{System.in.read();}catch(Exception e){e.printStackTrace();}
-        System.out.println("Alright! Lets Play\n" +
-                "B          U           Z           Z!!!");
-        System.out.println("\n\nNext Round - "+ roundName1);
+        System.out.println("Game of "+playerCount+" players");
+
+        for(int i=0; i<playerCount; i++) {
+            counter++;
+            System.out.print("Player "+counter+" Enter Username : ");
+            userName = scanner.next();
+            p[i]= new Player(userName, 0);
+            p[i].addPoints(15);
+        }
+        p[1].addPoints(10);
+        System.out.println("\n\nNext Round - ");
+        System.out.println("\n Points - "+ p[1].getPoints());
 
         timer = new Timer();
         interval = 6;
-
         timer.scheduleAtFixedRate(new TimerTask() {
 
             public void run() {
-                System.out.println(setInterval()+"...");
-
+                System.out.println(+setInterval()+"...");
+                counter = counter - 1;
             }
         }, 1000, 1000);
 
 
-
-
-
     }
+
     private static final int setInterval() {
-        if (interval == 1)
+        if (interval == 2)
             timer.cancel();
-        return --interval;
+        interval = interval -1;
+        return interval;
+
     }
+
+
 }
 
