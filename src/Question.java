@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 public class Question {
     private String question;
@@ -9,10 +11,29 @@ public class Question {
         this.question = question;
         this.answer = answer;
         this.choices = new ArrayList<String>();
-        {
             for (int i = 0; i < choices.length; i++) {
                 this.choices.add(choices[i]);
             }
-        }
+        Collections.shuffle(this.choices);
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
+    }
+
+    public String getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(String question) {
+        this.question = question;
+    }
+
+    public void setChoices(ArrayList<String> choices) {
+        this.choices = choices;
     }
 }
