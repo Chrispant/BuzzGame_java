@@ -52,16 +52,10 @@ public class Main {
         for(int i=0; i<2; i++) {
             int roundCounter =0;
             System.out.println("\nRound Type - " + roundTypes.get(i));
+            System.out.println("Category - "+roundCategories.get(categoryNumber));
             countDown();
             TimeUnit.SECONDS.sleep(6);
             g.start();
-            for (int j = 0; j < roundCount; j++) {
-                roundCounter++;
-                System.out.println("\nRound "+roundCounter+" - "+roundTypes.get(i));
-                System.out.println("Category - "+roundCategories.get(categoryNumber));
-                String answer = scanner.next();
-            }
-            roundTypes.remove(i);
         }
 
 
