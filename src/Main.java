@@ -21,6 +21,7 @@ public class Main {
         roundTypes.add("Σωστή Απάντηση");
         roundTypes.add("Ποντάρισμα");
         Collections.shuffle(roundTypes);
+        Game g = new Game();
 
         int roundCount = 6;
 
@@ -53,6 +54,7 @@ public class Main {
             System.out.println("\nRound Type - " + roundTypes.get(i));
             countDown();
             TimeUnit.SECONDS.sleep(6);
+            g.start();
             for (int j = 0; j < roundCount; j++) {
                 roundCounter++;
                 System.out.println("\nRound "+roundCounter+" - "+roundTypes.get(i));

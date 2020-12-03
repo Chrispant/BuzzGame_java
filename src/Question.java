@@ -21,6 +21,10 @@ public class Question {
         return answer;
     }
 
+    public ArrayList<String> getChoices() {
+        return choices;
+    }
+
     public void setAnswer(String answer) {
         this.answer = answer;
     }
