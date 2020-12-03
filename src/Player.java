@@ -1,6 +1,7 @@
-public class Player extends Game {
+public class Player {
     private String playerName;
     private int points;
+    private int answer;
 
     public Player(String playerName, int points){
         this.playerName = playerName;
@@ -17,5 +18,13 @@ public class Player extends Game {
 
     public void addPoints(int newPoints){
        points += newPoints;
+    }
+
+    public int getAnswer(){
+        return answer;
+    }
+
+    public void setAnswer(int answer){
+        this.answer = answer;
     }
 }

@@ -23,39 +23,20 @@ public class Main {
         Collections.shuffle(roundTypes);
         Game g = new Game();
 
-        int roundCount = 6;
-
-
+        int roundCount = 2;
 
         System.out.println("Hello, let's play Buzz!");
         System.out.println("Press enter to continue...");try{System.in.read();}catch(Exception e){e.printStackTrace();}
 
 
+        g.addPlayers();
 
-        /**
-         * Counts how many players will play and what their names will be.
-         */
-        System.out.println("Enter Number of Players : ");
-        int playerCount = scanner.nextInt();
-        Player p[] = new Player[playerCount];
-        System.out.println("Game of "+playerCount+" players");
-
-        for(int i=0; i<playerCount; i++) {
-            counter++;
-            System.out.print("Player "+counter+" Enter Username : ");
-            userName = scanner.next();
-            p[i]= new Player(userName, 0);
-            p[i].addPoints(15);
-        }
-
-
-        for(int i=0; i<2; i++) {
-            int roundCounter =0;
-            System.out.println("\nRound Type - " + roundTypes.get(i));
-            System.out.println("Category - "+roundCategories.get(categoryNumber));
+        for(int i=0; i<roundCount; i++) {
+            //System.out.println("\nRound Type - " + roundTypes.get(i));
+            //System.out.println("Category - "+roundCategories.get(categoryNumber));
             countDown();
             TimeUnit.SECONDS.sleep(6);
-            g.start();
+            g.startQuestion(i);
         }
 
 

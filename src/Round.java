@@ -1,17 +1,14 @@
 import java.util.ArrayList;
 
 public class Round {
-    private ArrayList<String> roundTypes;
+    private String roundType;
 
-    public Round(){
-        roundTypes = new ArrayList<String>();
+    public Round(String roundType){
+        this.roundType = roundType;
+
     }
 
-    public void addRoundType(String type){
-        roundTypes.add(type);
-    }
-
-    public ArrayList<String> getRoundTypes() {
-        return roundTypes;
+    public String getRoundType() {
+        return roundType;
     }
 }
