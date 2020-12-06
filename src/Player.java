@@ -20,6 +20,10 @@ public class Player {
        points += newPoints;
     }
 
+    public void removePoints(int newPoints){
+        points = points - newPoints;
+    }
+
     public int getAnswer(){
         return answer;
     }

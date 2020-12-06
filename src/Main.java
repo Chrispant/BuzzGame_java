@@ -6,38 +6,40 @@ import java.util.concurrent.TimeUnit;
 public class Main {
     static int interval;
     static Timer timer;
-    static int counter = 0;
 
 
-    public static void main(String[] args) throws IOException, InterruptedException {
-        Scanner scanner = new Scanner(System.in);
-        String userName;
-        ArrayList<String> roundCategories = new ArrayList<>();
-        roundCategories.add("Μουσική");
-        roundCategories.add("Επιστίμη");
-        roundCategories.add("Ιστορία");
-        int categoryNumber =(int) (Math.random()*2);
+    public static void main(String[] args) throws InterruptedException {
         ArrayList<String> roundTypes = new ArrayList<>();
-        roundTypes.add("Σωστή Απάντηση");
-        roundTypes.add("Ποντάρισμα");
-        Collections.shuffle(roundTypes);
         Game g = new Game();
 
         int roundCount = 2;
 
-        System.out.println("Hello, let's play Buzz!");
+        System.out.println("\nHello, let's play Buzz!");
+        System.out.println("This is a quiz game. Get the most points to Win!");
+        System.out.println("\nCurrently there are 2 types in this game\n");
+        System.out.println("Σωστή Απάντηση : Win 1000 points each time you answer a question right");
+        System.out.println("Ποντάρισμα : Bet a specific amount(250, 500, 750, 1000) of points and answer correctly to add them in your total point score. Answer wrong and you lose those points");
         System.out.println("Press enter to continue...");try{System.in.read();}catch(Exception e){e.printStackTrace();}
 
 
+
+
         g.addPlayers();
+        System.out.println("First round!");
+        System.out.println("To choose an answer simply type 1,2,3 or 4 depending on you decision and hit enter!");
+
 
         for(int i=0; i<roundCount; i++) {
             //System.out.println("\nRound Type - " + roundTypes.get(i));
             //System.out.println("Category - "+roundCategories.get(categoryNumber));
+            System.out.println("");
             countDown();
             TimeUnit.SECONDS.sleep(6);
             g.startQuestion(i);
+            System.out.println("Second round!");
+
         }
+        g.gameOver();
 
 
     }
