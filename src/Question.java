@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 import java.util.Collections;
 
+/**
+ * Class Question represents the questions of the game Buzz! Ouiz World. It contains the question, the correct answer and a list with the possible choices for the question
+ */
 public class Question {
     private String question;
     private String answer;
@@ -13,7 +16,7 @@ public class Question {
             for (int i = 0; i < choices.length; i++) {
                 this.choices.add(choices[i]);
             }
-        Collections.shuffle(this.choices);
+        Collections.shuffle(this.choices);//Shuffle all the possible choices.
     }
 
     public String getAnswer() {

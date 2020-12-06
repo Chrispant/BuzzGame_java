@@ -1,3 +1,7 @@
+/**
+ * Class Player represents one player of the game Buzz! Ouiz World. It contains the player Name, the total points that he has gained so far and one property that is the answer he provided at a given question.
+ */
+
 public class Player {
     private String playerName;
     private int points;

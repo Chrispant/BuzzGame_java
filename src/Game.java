@@ -2,20 +2,43 @@
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Class Game represents the whole logic of Buzz! Ouiz World. It contains a list of players that are currently playing. Also there are two ArrayList that contains the questions
+ * that are going to be used by the game. Also there is a list that contains the rounds of game.
+ */
 
 public class Game {
-    private final ArrayList<Question> questionSet;
-    private final ArrayList<Question> questionSet2;
+    private ArrayList<Question> questionSet;
+    private ArrayList<Question> questionSet2;
     private final HashMap<String, ArrayList<Question>> questionsPerCategory;
     private final ArrayList<Player> players;
     private final ArrayList<Round> rounds;
 
 
-
+    /**
+     * Constructor of class game. It initialises all properties of this class. It creates hard-coded questions with the corresponding answers. After it creates the questions, a new set of Questions objects
+     * are created and saved in the corresponding properties questionSet and questionSet2.
+     */
     public Game(){
         //Method for future use(Make each question correspond to a single category) use ArrayList or HashSet?
         questionsPerCategory = new HashMap<String,ArrayList<Question>>();
 
+        initQuestions();
+        initRoundCategories();
+
+        players = new ArrayList<Player>();
+
+        rounds = new ArrayList<Round>();
+        rounds.add(new Round("Σωστή Απάντηση"));
+        rounds.add(new Round("Ποντάρισμα"));
+        Collections.shuffle(rounds);
+    }
+
+
+    /**
+     * Private method initQuestions created all Questions for the game.
+     */
+    private void initQuestions(){
         questionSet = new ArrayList<Question>();
         questionSet2 = new ArrayList<Question>();
         String question1 = "A = ?";
@@ -44,7 +67,12 @@ public class Game {
         questionSet2.add(new Question(question7,"5x+24",choices7));
         Collections.shuffle(questionSet);
         Collections.shuffle(questionSet2);
+    }
 
+    /**
+     * Private method initRoundCategories creates the categories for each question set and saves them to HashMap questionsPerCategory
+     */
+    private void initRoundCategories(){
         //put the set to category
         ArrayList<String> roundCategories = new ArrayList<>();
         roundCategories.add("Επιστήμη");
@@ -52,18 +80,38 @@ public class Game {
         questionsPerCategory.put(roundCategories.get(0),questionSet);
         questionsPerCategory.put(roundCategories.get(1),questionSet2);
 
-
-
-
-
-        players = new ArrayList<Player>();
-
-        rounds = new ArrayList<Round>();
-        rounds.add(new Round("Σωστή Απάντηση"));
-        rounds.add(new Round("Ποντάρισμα"));
-        Collections.shuffle(rounds);
     }
 
+    /**
+     * Clear from questionSet or questionSet2 one question based on position and the category.
+     * @param counter the index of the question that is going to be removed
+     * @param category the category that the question belongs
+     */
+    private void clearQuestionSet(int counter,String category){
+        //remove question from array
+        if(category.equals("Επιστήμη")){
+            if(questionSet.size()>1)
+                questionSet.remove(counter);
+            else{
+                questionSet.remove(0);
+            }
+        }else{
+            if(questionSet2.size()>1){
+                questionSet2.remove(counter);
+            }else{
+                questionSet2.remove(0);
+            }
+
+        }
+    }
+
+
+    /**
+     * Method startQuestion starts the game  Buzz! Ouiz World. After it receives the round type, gets category of the questions and print them to the user to inform him which type of question he will have
+     * to answer.
+     * @param roundType int value that represents the round type, possible values 0 -> Σωστή Απάντηση, 1 ->Ποντάρισμα
+     * @throws InterruptedException
+     */
     public void startQuestion(int roundType) throws InterruptedException {
 
         //Prints type of round
@@ -73,41 +121,56 @@ public class Game {
         for(int counter = 0; counter<2; counter++) {
             int questionCounter = counter +1;
             int zeroOrOne = (int) Math.round(Math.random()*2);
-            String category = roundCategory(zeroOrOne);
-            TimeUnit.SECONDS.sleep(2);
+            String category = roundCategory(zeroOrOne);//Get the category of questions and display it to the user
+            TimeUnit.SECONDS.sleep(2);//Pause the program for 2 seconds using native method sleep
             System.out.println("\n"+"Category - "+category);
-            TimeUnit.SECONDS.sleep(4);
-            System.out.println("\nQuestion " + questionCounter + " : " + questionsPerCategory.get(category).get(counter).getQuestion());
+
+            Question question = null;
+            //Retrieve the question that is going to be used for the game
+            //Check the questionsPerCategory arraylist of questions if the size is 1 because there is case that all 4 questions of the same category can be played. In that case the counter for the least question is going
+            //to be 1 but the question is located at the 0 index.
+            if(questionsPerCategory.get(category).size() == 1) {
+                question = questionsPerCategory.get(category).get(0);
+            }else{
+                question = questionsPerCategory.get(category).get(counter);
+            }
+
+            TimeUnit.SECONDS.sleep(4);//Pause the program for 4 seconds using native method sleep
+            System.out.println("\nQuestion " + questionCounter + " : " + question.getQuestion());//Print out the question for the specific category
             //Stores number of choices for a given question, this help us out later
-            int numOfChoices = questionsPerCategory.get(category).get(counter).getChoices().size();
+            int numOfChoices = question.getChoices().size();//Number of possible answers
 
             //Prints the choices
             for (int choice = 0; choice < numOfChoices; choice++) {
                 TimeUnit.SECONDS.sleep(2);
-                System.out.println((choice + 1) + " : " + questionsPerCategory.get(category).get(counter).getChoices().get(choice));
+                System.out.println((choice + 1) + " : " + question.getChoices().get(choice));
             }
             //Sets the right Answer
-            ArrayList<String> choices = questionsPerCategory.get(category).get(counter).getChoices();
-            String correctAnswer = questionsPerCategory.get(category).get(counter).getAnswer();
+            ArrayList<String> choices =question.getChoices();
+            String correctAnswer = question.getAnswer();//Get the correct answer for the question that is chosen
             int correctAnswerNumber = choices.indexOf(correctAnswer) + 1;
             // Sets each players answer
             for (int player = 0; player < players.size(); player++) {
+                //If the round type is Ποντάρισμα get the bet of the player
                 if(rounds.get(roundType).getRoundType().equals("Ποντάρισμα")) {
                     System.out.println("\n"+players.get(player).getPlayerName() + "'s bet is : ");
-                    int bet = bet();
+                    int bet = bet();//Get the bet of the player
                     System.out.println("\n"+players.get(player).getPlayerName() + "'s answer is : ");
-                    players.get(player).setAnswer(answer());
+                    players.get(player).setAnswer(answer());//Set the answer of the player from the keyboard
+                    //If the aswer that is provided is correct increase the points of the player to the corresponding bet.
                     if (players.get(player).getAnswer() == correctAnswerNumber) {
                        // System.out.println("\n"+players.get(player).getPlayerName() + " got it right!");
                         players.get(player).addPoints(bet);
                     }else{
                         //System.out.println("\n"+players.get(player).getPlayerName()+" got it wrong!");
+                        //The player has aswered incorrectly, remove the points that he bet.
                         players.get(player).removePoints(bet);
                     }
                 }else{
+                    ////If the round type is Σωστή Απάντηση
                     TimeUnit.SECONDS.sleep(2);
                     System.out.println("\n"+players.get(player).getPlayerName() + "'s answer is : ");
-                    players.get(player).setAnswer(answer());
+                    players.get(player).setAnswer(answer());//Retrieve the answer of the player
                     if (players.get(player).getAnswer() == correctAnswerNumber) {
                         //System.out.println("\n"+players.get(player).getPlayerName() + " got it right!");
                         players.get(player).addPoints(1000);
@@ -117,65 +180,56 @@ public class Game {
 
                 }
             }
-            //Checks if player answer right or wrong
-            /**for (int player = 0; player < players.size(); player++) {
-                if (players.get(player).getAnswer() == correctAnswerNumber) {
-                    checkAnswer = true;
-                    if(rounds.get(roundType).getRoundType() == "Ποντάρισμα") {
-                        System.out.println(players.get(player).getPlayerName() + " got it right!");
-                        players.get(player).addPoints(bet);
-                    }else{
-                        System.out.println(players.get(player).getPlayerName() + " got it right!");
-                        players.get(player).addPoints(1000);
-                    }
-                } else {
-                    checkAnswer = false;
-                    System.out.println(players.get(player).getPlayerName()+" got it wrong!");
-                }
-                //checkRoundType();
-            }*/
+
+
             //See what the correct answer is
             System.out.println("And the correct answer isssssss ");
             TimeUnit.SECONDS.sleep(3);
             System.out.println( + correctAnswerNumber + " : " + correctAnswer);
-            //remove question from array
-            if(category.equals("Επιστήμη")){
-                if(questionSet.size()>1)
-                questionSet.remove(counter);
-                else{
-                    questionSet.remove(0);
-                }
-            }else{
-                if(questionSet2.size()>1){
-                    questionSet2.remove(counter);
-                }else{
-                    questionSet2.remove(0);
-                }
 
-            }
+
+            clearQuestionSet(counter,category);
         }
 
 
     }
     /**
-     * Counts how many players will play and what their names will be.
+     * Method addPlayer initialises the players for the game. It can work with a single player or multiple players.
      */
-
     public void addPlayers(){
         int playerCounter = 0;
         String userName;
         System.out.println("Enter Number of Players : ");
-        Scanner scanner = new Scanner(System.in);
-        int playerCount = scanner.nextInt();
-        System.out.println("Game of "+playerCount+" players");
-        for(int i=0; i<playerCount; i++) {
-            playerCounter++;
-            System.out.print("Player "+playerCounter+" enter Nickname : ");
-            userName = scanner.next();
-            players.add(new Player(userName, 0));
+
+        boolean playersAddedSuccessfully = false;
+        while (!playersAddedSuccessfully){
+            try {
+                Scanner scanner = new Scanner(System.in);
+                int playerCount = scanner.nextInt();
+
+
+                System.out.println("Game of "+playerCount+" players");
+                for(int i=0; i<playerCount; i++) {
+                    playerCounter++;
+                    System.out.print("Player "+playerCounter+" enter Nickname : ");
+                    userName = scanner.next();
+                    players.add(new Player(userName, 0));
+                }
+                playersAddedSuccessfully = true;
+            }catch (InputMismatchException e){
+                System.out.println("Please provide a number for the total players of the game");
+            }
         }
+
+
+
     }
-    // returns string of category
+
+    /**
+     *
+     * @param category index that is going to be used for returning the appropriate String category
+     * @return
+     */
     public String roundCategory(int category){
         if(category == 0){
             return "Επιστήμη";
@@ -184,7 +238,10 @@ public class Game {
             return "Ιστορία";
     }
 
-    //prints points of each player
+
+    /**
+     * Method gameOver prints to the console the points of each player after the game is completed
+     */
     public void gameOver(){
         System.out.println("\nGame is over!");
         for(int player=0; player<players.size(); player++){
@@ -192,7 +249,11 @@ public class Game {
         }
     }
 
-    //sees if users made a bet in a correct manner
+
+    /**
+     * Method bet represents the betting process of the game. The player can only bet 250,500,750,1000 points other option is Unavailable
+     * @return the bet that the player has decided to play
+     */
     public int bet(){
         Scanner scanner = new Scanner(System.in);
         int bet = scanner.nextInt();
@@ -211,12 +272,16 @@ public class Game {
                 return bet;
             default:
                 System.out.println("Unavailable bet please try again");
-                return bet();
+                return bet();//Unavailable option repeat the betting process.
 
         }
     }
 
-    //sees if users answered in a correct manner
+
+    /**
+     * Method answer represents the answer that the user gives from the keyboard. Possible answers are 1-4 other answer is unavailable.
+     * @return the answer of the player
+     */
     public int answer(){
         Scanner scanner = new Scanner(System.in);
         int answer = scanner.nextInt();
@@ -232,7 +297,6 @@ public class Game {
 
         }
     }
-
 
 
 }

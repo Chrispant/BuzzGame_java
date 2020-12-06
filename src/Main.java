@@ -10,7 +10,7 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         ArrayList<String> roundTypes = new ArrayList<>();
-        Game g = new Game();
+        Game g = new Game();//Create the game
 
         int roundCount = 2;
 
@@ -24,22 +24,31 @@ public class Main {
 
 
 
+        // Add the players to the game
         g.addPlayers();
         System.out.println("First round!");
         System.out.println("To choose an answer simply type 1,2,3 or 4 depending on you decision and hit enter!");
 
 
+        //Start the game.
         for(int i=0; i<roundCount; i++) {
             //System.out.println("\nRound Type - " + roundTypes.get(i));
             //System.out.println("Category - "+roundCategories.get(categoryNumber));
             System.out.println("");
             countDown();
             TimeUnit.SECONDS.sleep(6);
-            g.startQuestion(i);
+
+            try{
+                g.startQuestion(i);
+            }catch (InterruptedException e){
+                System.out.println("Game failed. Continue to the next round!");
+                e.printStackTrace();
+            }
+
             System.out.println("Second round!");
 
         }
-        g.gameOver();
+        g.gameOver();//Print the total points of the player after the game is ended
 
 
     }
