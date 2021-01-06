@@ -10,6 +10,10 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         ArrayList<String> roundTypes = new ArrayList<>();
+
+        GUI gui = new GUI();
+        gui.startFrame();
+
         Game g = new Game();//Create the game
 
         int roundCount = 2;
