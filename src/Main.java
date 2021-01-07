@@ -8,12 +8,13 @@ public class Main {
     static Timer timer;
 
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException {
         ArrayList<String> roundTypes = new ArrayList<>();
 
         GUI gui = new GUI();
-        gui.startFrame();
-
+        gui.newGame();
+        //gui.startQuestionFrame();
+        TimeUnit.SECONDS.sleep(55);
         Game g = new Game();//Create the game
 
         int roundCount = 2;
