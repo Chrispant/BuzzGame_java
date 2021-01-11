@@ -6,26 +6,27 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.Flow;
 import java.util.concurrent.TimeUnit;
 
 public class GUI extends JFrame implements ActionListener {
     //newGame game;
 
+    private int maxNumOfPlayers;
     private ArrayList<Question> questionSet;
     private ArrayList<Question> questionSet2;
     private  HashMap<String, ArrayList<Question>> questionsPerCategory;
     private final ArrayList<Player> players;
     private final ArrayList<Round> rounds;
 
+    private JPanel playerPanel;
+
     private JButton button1,button2,button3,button4;
     private JButton newGameButton, highScoreButton, quitButton;
+    private JButton[] player;
 
-    private JTextField gameTypeLabel;
+    private JTextField gameTypeLabel, playerName;
     private JTextArea questionLabel;
     private JLabel[] answer;
     private JLabel time_label;
@@ -35,8 +36,9 @@ public class GUI extends JFrame implements ActionListener {
     private JLabel backgroundImage;
 
     public GUI() throws IOException {
-
+        maxNumOfPlayers = 2;
         initComponents();
+
 
         //game = new newGame(this);
 
@@ -71,14 +73,27 @@ public class GUI extends JFrame implements ActionListener {
         button3 = new JButton();
         button4 = new JButton();
         time_label = new JLabel();
+        playerName = new JTextField();
+        playerPanel = new JPanel();
+
         answer = new JLabel[4];
         for(int i = 0; i<4; i++){
             answer[i] = new JLabel("Test");
         }
 
-        //Gui help components
+        player = new JButton[maxNumOfPlayers];
+        for (int i=0; i<maxNumOfPlayers; i++){
+            if(i == 0){
+                player[i] = new JButton("1 Player");
+            }else{
+                player[i] = new JButton(i+ " Players");
+            }
+        }
+
+        //Gui image components
         BufferedImage myPicture = ImageIO.read(new File("images/basic_frame_image.jpg"));
         backgroundImage = new JLabel(new ImageIcon(myPicture));
+
 
         //Gui Starting frame Components
         newGameButton = new JButton("New game");
@@ -97,13 +112,14 @@ public class GUI extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
 
 
+        //buttons
         newGameButton.setBounds(150,50,300,150);
         newGameButton.setFont(new Font("MV Boli",Font.BOLD,35));
         newGameButton.setFocusable(false);
         newGameButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                startQuestionFrame();
+                newGame();
 
             }
         });
@@ -137,6 +153,27 @@ public class GUI extends JFrame implements ActionListener {
 
         add(quitButton);
         add(backgroundImage);
+
+
+        //Choosing number of players components
+        BoxLayout boxlayout = new BoxLayout(playerPanel, BoxLayout.Y_AXIS);
+
+        playerPanel.setLayout(boxlayout);
+
+
+
+        int y = 0;
+        for(int i = 0; i <maxNumOfPlayers; i++){
+            player[i].setBounds(100+y,50+y, 450,250);
+            player[i].setFont(new Font("Arial",Font.BOLD,25));
+            player[i].setFocusable(false);
+            y  +=100;
+        }
+
+
+        playerName.setBounds(200,200,200,200);
+
+
 
 
 
@@ -218,25 +255,39 @@ public class GUI extends JFrame implements ActionListener {
         
 
     }
-
-
-    public void startQuestionFrame(){
-        setVisible(false);
-        frame.setVisible(true);
-        frame.setLocation(getLocation());
-    }
-    public void stopQuestionFrame(){frame.setVisible(false);}
-
-    public void newGame(){
-        frame.setVisible(false);
+    public void start(){
         setVisible(true);
     }
 
-    public void updateQuestionAnswer(){
+    //updates starting frame to player number choice and then starts the game's frame
+    public void newGame(){
+        remove(newGameButton);
+        remove(highScoreButton);
+        remove(quitButton);
+        int counter = 0;
+        for(int i = 0; i<maxNumOfPlayers; i++){
+            counter++;
+            playerPanel.add(player[i]);
+            int finalCounter = counter;
+            player[i].addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    addPlayers(finalCounter);
 
+                }
+            });
+        }
+        add(playerPanel);
+        revalidate();
 
+        //add more buttons for more players
 
+        frame.setVisible(false);
+        frame.setLocation(getLocation());
     }
+
+
+
 
 
 
@@ -435,6 +486,30 @@ public class GUI extends JFrame implements ActionListener {
 
     public void highScoreScreen(){
         //logic for high score
+    }
+    public void addPlayers(int playerCount) {
+        int playerCounter = 1;
+        String userName;
+        System.out.println("Enter Number of Players : ");
+
+        boolean playersAddedSuccessfully = false;
+        while (!playersAddedSuccessfully) {
+            try {
+                System.out.println("Game of " + playerCount + " players");
+                for (int i = 0; i < playerCount; i++) {
+                    add(playerName);
+                    playerName.setText("Player " + playerCounter + " enter Nickname : ");
+                    playerCounter++;
+                    userName = playerName.getText();
+                    players.add(new Player(userName, 0));
+                }
+                playersAddedSuccessfully = true;
+            } catch (InputMismatchException e) {
+                System.out.println("Please provide a number for the total players of the game");
+            }
+        }
+
+
     }
 }
         /*

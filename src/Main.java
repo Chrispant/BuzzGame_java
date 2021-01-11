@@ -12,7 +12,7 @@ public class Main {
         ArrayList<String> roundTypes = new ArrayList<>();
 
         GUI gui = new GUI();
-        gui.newGame();
+        gui.start();
         //gui.startQuestionFrame();
         TimeUnit.SECONDS.sleep(55);
         Game g = new Game();//Create the game
