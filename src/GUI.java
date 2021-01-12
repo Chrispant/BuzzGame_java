@@ -3,6 +3,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -11,8 +13,8 @@ import java.util.concurrent.TimeUnit;
 
 public class GUI extends JFrame implements ActionListener {
     //newGame game;
-
     final private int maxNumOfPlayers = 2;
+    private int playersToPlay;
     private ArrayList<Question> currentQuestionSet;
     private Question currentQuestion;
     private final ArrayList<Round> rounds;
@@ -31,11 +33,11 @@ public class GUI extends JFrame implements ActionListener {
     private JLabel[] answer;
     private JLabel time_label;
 
-    private JLabel playerNameLabel;
+    private JLabel playerNameLabel, numOfPlayersLabel, nameLabel;
 
     private JFrame frame;
 
-    private JLabel backgroundImage;
+    private JLabel backgroundImage,backgroundImage1,backgroundImage2;
 
     public GUI(Game game) throws IOException {
         this.game = game;
@@ -77,6 +79,8 @@ public class GUI extends JFrame implements ActionListener {
 
         time_label = new JLabel();
         playerNameLabel = new JLabel();
+        nameLabel = new JLabel();
+        numOfPlayersLabel = new JLabel();
 
         playerName = new JTextField();
         playerPanel = new JPanel();
@@ -93,6 +97,8 @@ public class GUI extends JFrame implements ActionListener {
         //Gui image components
         BufferedImage myPicture = ImageIO.read(new File("images/basic_frame_image.jpg"));
         backgroundImage = new JLabel(new ImageIcon(myPicture));
+        backgroundImage1 = new JLabel(new ImageIcon(myPicture));
+        backgroundImage2 = new JLabel(new ImageIcon(myPicture));
 
         //Starting frame's parameters
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -146,14 +152,44 @@ public class GUI extends JFrame implements ActionListener {
         int y = 0;
         for (int i = 0; i < maxNumOfPlayers; i++) {
             int x = i + 1;
-            playerButton[i].setBounds(200, 100 + y, 250, 100);
+            playerButton[i].setBounds(180, 100 + y, 250, 75);
             playerButton[i].setFont(new Font("Arial", Font.BOLD, 25));
             playerButton[i].setFocusable(false);
             y += 100;
         }
 
-        playerName.setBounds(200, 200, 200, 200);
+        nameLabel.setBounds(0, 120, 650, 100);
+        nameLabel.setForeground(new Color(155, 25, 11));
+        nameLabel.setFont(new Font("ARIAL", Font.BOLD, 25));
+        nameLabel.setHorizontalAlignment(JTextField.CENTER);
+
+        playerName.setBounds(150, 200, 350, 100);
         playerName.setFocusable(true);
+        playerName.setBackground(new Color(55, 55, 55));
+        playerName.setForeground(new Color(255, 255, 255));
+        playerName.setFont(new Font("ARIAL", Font.BOLD, 30));
+        playerName.setHorizontalAlignment(JTextField.CENTER);
+        playerName.setBorder(BorderFactory.createBevelBorder(1));
+        playerName.setText("Adam");
+        playerName.setEditable(true);
+        playerName.addFocusListener(new FocusListener() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                playerName.setText("");
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+
+            }
+        });
+
+        numOfPlayersLabel.setBounds(0, 0, 650, 50);
+        numOfPlayersLabel.setBackground(new Color(155, 155, 155));
+        numOfPlayersLabel.setForeground(new Color(155, 155, 155));
+        numOfPlayersLabel.setFont(new Font("ARIAL", Font.BOLD, 30));
+        numOfPlayersLabel.setHorizontalAlignment(JTextField.CENTER);
+        numOfPlayersLabel.setText("Choose Number Of Players");
 
         //Quiz frame parameters
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -266,8 +302,9 @@ public class GUI extends JFrame implements ActionListener {
         playerButton[0].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //  doneButton.setVisible(true);
-                addPlayers(1);
+                playersToPlay = 1;
+                updateFrame("Add Names");
+                playerToName(1);
             }
         });
 
@@ -275,8 +312,9 @@ public class GUI extends JFrame implements ActionListener {
         playerButton[1].addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //  doneButton.setVisible(true);
-                addPlayers(2);
+                playersToPlay = 2;
+                updateFrame("Add Names");
+                playerToName(1);
             }
         });
 
@@ -285,7 +323,7 @@ public class GUI extends JFrame implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String text = playerName.getText();
-                String playerName = text.split(":")[1];
+                String playerName = text;
                 System.out.println(playerName);
 
                 game.addPlayer(playerName);
@@ -388,19 +426,60 @@ public class GUI extends JFrame implements ActionListener {
 
     //updates starting frame to player number choice and then starts the game's frame
     public void newGame() {
-        remove(newGameButton);
-        remove(highScoreButton);
-        remove(quitButton);
+        updateFrame("Add Players");
+    }
 
-        for (int i = 0; i < maxNumOfPlayers; i++) {
-            playerPanel.add(playerButton[i]);
+    public void updateFrame(String whichFrame){
+        if(whichFrame.equals("Add Players")){
+            remove(newGameButton);remove(highScoreButton);remove(quitButton);remove(backgroundImage);
+            add(numOfPlayersLabel);
+
+            //add(topPanel, BorderLayout.PAGE_START);
+            //add(gridPanel);
+            //topPanel.add(numOfPlayersLabel);
+            for(int i = 0; i<maxNumOfPlayers; i++){
+                add(playerButton[i]);
+            }
+            add(backgroundImage1);
+            revalidate();
         }
-        playerPanel.add(backgroundImage);
-        add(playerPanel);
-        revalidate();
+        if(whichFrame.equals("Add Names")){
+            numOfPlayersLabel.setText("Choose Nickname");
+            for(int i =0; i<maxNumOfPlayers; i++){
+                remove(playerButton[i]);
+            }
+            remove(backgroundImage1);
 
-        frame.setVisible(false);
-        frame.setLocation(getLocation());
+            add(nameLabel);
+            add(playerName);
+            doneButton.setVisible(true);
+            add(backgroundImage2);
+            revalidate();
+
+        }
+
+    }
+
+    //playerToName takes a number depending on which player's turn it is to give name
+
+    public void playerToName(int nextPlayer) {
+        if (nextPlayer <= 2) {
+            nameLabel.setText("Player " + nextPlayer + " enter your nickname");
+            doneButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    String name = playerName.getText();
+                    playerToName(nextPlayer+1);
+                    //playerName.setText("Bella");
+
+                }
+            });
+
+
+        }else{
+            frame.setVisible(true);
+        }
+
     }
 
 
