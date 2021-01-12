@@ -14,6 +14,9 @@ public class Game {
     private final ArrayList<Player> players;
     private final ArrayList<Round> rounds;
 
+    private String currentCategory;
+    private int currentCategoryIndex = 0;
+    private int currentPlayerIndex;
 
     /**
      * Constructor of class game. It initialises all properties of this class. It creates hard-coded questions with the corresponding answers. After it creates the questions, a new set of Questions objects
@@ -75,8 +78,8 @@ public class Game {
     private void initRoundCategories() {
         //put the set to category
         ArrayList<String> roundCategories = new ArrayList<>();
-        roundCategories.add("Επιστήμη");
-        roundCategories.add("Ιστορία");
+        roundCategories.add("Science");
+        roundCategories.add("History");
         questionsPerCategory.put(roundCategories.get(0), questionSet);
         questionsPerCategory.put(roundCategories.get(1), questionSet2);
 
@@ -90,7 +93,7 @@ public class Game {
      */
     private void clearQuestionSet(int counter, String category) {
         //remove question from array
-        if (category.equals("Επιστήμη")) {
+        if (category.equals("Science")) {
             if (questionSet.size() > 1)
                 questionSet.remove(counter);
             else {
@@ -104,6 +107,25 @@ public class Game {
             }
 
         }
+    }
+
+
+    public String getRandomCategory(){
+        //Edw teleiewsan ola t set twn erwtisewn
+        if(currentCategoryIndex == 1){
+            currentCategoryIndex = 0;
+            return null;
+        }
+
+         currentCategory = roundCategory(currentCategoryIndex);//Get the category of questions and display it to the user
+         currentCategoryIndex = currentCategoryIndex + 1;
+
+        return currentCategory;
+    }
+
+
+    public ArrayList<Question> getQuestionsBasedOnCategory(){
+        return questionsPerCategory.get(currentCategory);
     }
 
 
@@ -199,7 +221,7 @@ public class Game {
     /**
      * Method addPlayer initialises the players for the game. It can work with a single player or multiple players.
      */
-    public void addPlayers() {
+    public void addPlayers(int numberOfPlayers) {
         int playerCounter = 0;
         String userName;
         System.out.println("Enter Number of Players : ");
@@ -227,16 +249,38 @@ public class Game {
 
     }
 
+
+    public void addPlayer(String playerName){
+        Player player = new Player(playerName,0);
+        players.add(player);
+        currentPlayerIndex = players.size() - 1;
+    }
+
+
+    public Player getCurrentPlayer(){
+        if(players.size() == 1){
+            return players.get(currentPlayerIndex);
+        }
+
+        Player player = players.get(currentPlayerIndex);
+
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+
+        return player;
+
+    }
+
+
     /**
      * @param category index that is going to be used for returning the appropriate String category
      * @return
      */
     public String roundCategory(int category) {
         if (category == 0) {
-            return "Επιστήμη";
+            return "Science";
 
         } else
-            return "Ιστορία";
+            return "History";
     }
 
 

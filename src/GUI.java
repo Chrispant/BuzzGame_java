@@ -12,17 +12,18 @@ import java.util.concurrent.TimeUnit;
 public class GUI extends JFrame implements ActionListener {
     //newGame game;
 
-    final private int maxNumOfPlayers;
-    private ArrayList<Question> questionSet;
-    private ArrayList<Question> questionSet2;
-    private  HashMap<String, ArrayList<Question>> questionsPerCategory;
-    private final ArrayList<Player> players;
+    final private int maxNumOfPlayers = 2;
+    private ArrayList<Question> currentQuestionSet;
+    private Question currentQuestion;
     private final ArrayList<Round> rounds;
+
+    private Game game;
 
     private JPanel playerPanel;
 
-    private JButton button1,button2,button3,button4;
+    private JButton button1, button2, button3, button4;
     private JButton newGameButton, highScoreButton, quitButton;
+    private JButton doneButton;
     private JButton[] playerButton;
 
     private JTextField gameTypeLabel, playerName;
@@ -30,28 +31,20 @@ public class GUI extends JFrame implements ActionListener {
     private JLabel[] answer;
     private JLabel time_label;
 
+    private JLabel playerNameLabel;
+
     private JFrame frame;
 
     private JLabel backgroundImage;
 
-    public GUI() throws IOException {
-        maxNumOfPlayers = 2;
+    public GUI(Game game) throws IOException {
+        this.game = game;
+
         initComponents();
-
-
-        //game = new newGame(this);
-
-
-
-        String text = "What is the number after the number 5";
-        String category = "Science";
+        initListeners();
 
         //Hash map that pairs a set of questions to a category
-        questionsPerCategory = new HashMap<String, ArrayList<Question>>();
-
-        initQuestions();
-
-        players = new ArrayList<Player>();
+        currentQuestionSet = new ArrayList<>();
 
         rounds = new ArrayList<Round>();
         rounds.add(new Round("Right Answer"));
@@ -62,12 +55,15 @@ public class GUI extends JFrame implements ActionListener {
         Collections.shuffle(rounds);
 
     }
-    public void initComponents() throws IOException {
+
+    private void initComponents() throws IOException {
         //GUI Quiz components
         frame = new JFrame();
 
-        gameTypeLabel = new JTextField();
+        gameTypeLabel = new JTextField("\\u00C3");
         questionLabel = new JTextArea();
+
+        doneButton = new JButton("Done");
 
         button1 = new JButton();
         button2 = new JButton();
@@ -75,21 +71,22 @@ public class GUI extends JFrame implements ActionListener {
         button4 = new JButton();
 
         answer = new JLabel[4];
-        for(int i = 0; i<4; i++){
+        for (int i = 0; i < 4; i++) {
             answer[i] = new JLabel("Test");
         }
 
         time_label = new JLabel();
+        playerNameLabel = new JLabel();
 
         playerName = new JTextField();
         playerPanel = new JPanel();
         playerButton = new JButton[maxNumOfPlayers];
-        for (int i=0; i<maxNumOfPlayers; i++){
-            int j = i+1;
-            if(i == 0){
+        for (int i = 0; i < maxNumOfPlayers; i++) {
+            int j = i + 1;
+            if (i == 0) {
                 playerButton[i] = new JButton("1 Player  ");
-            }else{
-                playerButton[i] = new JButton(j+ " Players");
+            } else {
+                playerButton[i] = new JButton(j + " Players");
             }
         }
 
@@ -99,11 +96,20 @@ public class GUI extends JFrame implements ActionListener {
 
         //Starting frame's parameters
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(650,650);
+        setSize(650, 650);
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
         setLocationRelativeTo(null);
 
+
+        doneButton.setBounds(500, 500, 120, 50);
+        doneButton.setFont(new Font("MV Boli", Font.BOLD, 30));
+        doneButton.setFocusable(false);
+
+
+        add(doneButton);
+
+        doneButton.setVisible(false);
 
         //Gui Starting frame Components///////////////////////////////////////////////////////////
         newGameButton = new JButton("New game");
@@ -111,41 +117,21 @@ public class GUI extends JFrame implements ActionListener {
         quitButton = new JButton("Exit");
 
         //buttons
-        newGameButton.setBounds(150,50,300,150);
-        newGameButton.setFont(new Font("MV Boli",Font.BOLD,35));
+        newGameButton.setBounds(150, 50, 300, 150);
+        newGameButton.setFont(new Font("MV Boli", Font.BOLD, 35));
         newGameButton.setFocusable(false);
-        newGameButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                newGame();
-
-            }
-        });
 
         add(newGameButton);
 
-        highScoreButton.setBounds(150,250, 300,150);
-        highScoreButton.setFont(new Font("MV Boli",Font.BOLD,35));
+        highScoreButton.setBounds(150, 250, 300, 150);
+        highScoreButton.setFont(new Font("MV Boli", Font.BOLD, 35));
         highScoreButton.setFocusable(false);
-        highScoreButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                highScoreScreen();
-
-            }
-        });
 
         add(highScoreButton);
 
-        quitButton.setBounds(150,450, 300,150);
-        quitButton.setFont(new Font("MV Boli",Font.BOLD,35));
+        quitButton.setBounds(150, 450, 300, 150);
+        quitButton.setFont(new Font("MV Boli", Font.BOLD, 35));
         quitButton.setFocusable(false);
-        quitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(1);
-            }
-        });
 
         add(quitButton);
         add(backgroundImage);
@@ -157,92 +143,84 @@ public class GUI extends JFrame implements ActionListener {
         playerPanel.setLayout(boxlayout);
 
 
-
         int y = 0;
-        for(int i = 0; i <maxNumOfPlayers; i++){
-            int x = i+1;
-            playerButton[i].setBounds(200,100+y, 250,100);
-            playerButton[i].setFont(new Font("Arial",Font.BOLD,25));
+        for (int i = 0; i < maxNumOfPlayers; i++) {
+            int x = i + 1;
+            playerButton[i].setBounds(200, 100 + y, 250, 100);
+            playerButton[i].setFont(new Font("Arial", Font.BOLD, 25));
             playerButton[i].setFocusable(false);
-            playerButton[i].addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    addPlayers(x);
-                }
-            });
-            y +=100;
+            y += 100;
         }
 
-
-        playerName.setBounds(200,200,200,200);
+        playerName.setBounds(200, 200, 200, 200);
         playerName.setFocusable(true);
-
-
-
-
 
         //Quiz frame parameters
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(650,650);
+        frame.setSize(650, 650);
         frame.setLayout(new BorderLayout());
         frame.setBackground(Color.WHITE);
 
-        gameTypeLabel.setBounds(0,0,650,50);
-        gameTypeLabel.setBackground(new Color(25,25,25));
-        gameTypeLabel.setForeground(new Color(125,155,0));
-        gameTypeLabel.setFont(new Font("Ink Free",Font.BOLD,30));
+        gameTypeLabel.setBounds(0, 0, 650, 50);
+        gameTypeLabel.setBackground(new Color(25, 25, 25));
+        gameTypeLabel.setForeground(new Color(125, 155, 0));
+        gameTypeLabel.setFont(new Font("Ink Free", Font.BOLD, 30));
         gameTypeLabel.setBorder(BorderFactory.createBevelBorder(1));
         gameTypeLabel.setHorizontalAlignment(JTextField.CENTER);
         gameTypeLabel.setEditable(false);
         gameTypeLabel.setText("Category - Game Type");///////////////////////////////////////////////////////////
 
-        questionLabel.setBounds(0,50,650,50);
+        questionLabel.setBounds(0, 50, 650, 50);
         questionLabel.setLineWrap(true);
         questionLabel.setWrapStyleWord(true);
-        questionLabel.setBackground(new Color(25,25,25));
-        questionLabel.setForeground(new Color(125,155,25));
-        questionLabel.setFont(new Font("MV Boli",Font.BOLD,25));
+        questionLabel.setBackground(new Color(25, 25, 25));
+        questionLabel.setForeground(new Color(125, 155, 25));
+        questionLabel.setFont(new Font("MV Boli", Font.BOLD, 25));
         questionLabel.setBorder(BorderFactory.createBevelBorder(1));
         questionLabel.setEditable(false);
         questionLabel.setText("Question");////////////////////////////////////////////////////////
 
-        button1.setBounds(0,100,100,100);
-        button1.setFont(new Font("MV Boli",Font.BOLD,35));
+        button1.setBounds(0, 100, 100, 80);
+        button1.setFont(new Font("MV Boli", Font.BOLD, 35));
         button1.setFocusable(false);
         button1.addActionListener(this);
         button1.setText("1");
 
-        button2.setBounds(0,200,100,100);
-        button2.setFont(new Font("MV Boli",Font.BOLD,35));
+        button2.setBounds(0, 200, 100, 80);
+        button2.setFont(new Font("MV Boli", Font.BOLD, 35));
         button2.setFocusable(false);
         button2.addActionListener(this);
         button2.setText("2");
 
-        button3.setBounds(0,300,100,100);
-        button3.setFont(new Font("MV Boli",Font.BOLD,35));
+        button3.setBounds(0, 300, 100, 80);
+        button3.setFont(new Font("MV Boli", Font.BOLD, 35));
         button3.setFocusable(false);
         button3.addActionListener(this);
         button3.setText("3");
 
-        button4.setBounds(0,400,100,100);
-        button4.setFont(new Font("MV Boli",Font.BOLD,35));
+        button4.setBounds(0, 400, 100, 80);
+        button4.setFont(new Font("MV Boli", Font.BOLD, 35));
         button4.setFocusable(false);
         button4.addActionListener(this);
         button4.setText("4");
 
-        time_label.setBounds(0,500,100,25);
-        time_label.setBackground(new Color(50,50,50));
-        time_label.setForeground(new Color(255,0,0));
-        time_label.setFont(new Font("MV Boli",Font.PLAIN,16));
+        playerNameLabel.setBounds(0, 500, 400, 25);
+        playerNameLabel.setFont(new Font("MV Boli", Font.BOLD, 15));
+
+
+        time_label.setBounds(0, 500, 100, 25);
+        time_label.setBackground(new Color(50, 50, 50));
+        time_label.setForeground(new Color(255, 0, 0));
+        time_label.setFont(new Font("MV Boli", Font.PLAIN, 16));
         time_label.setHorizontalAlignment(JTextField.CENTER);
         time_label.setText("timer 00:00");
 
         int x = 0;////////////////////////////////////////////////////////
-        for(int i = 0; i<4; i++){
-            answer[i].setBounds(125,100+x,500,100);
-            answer[i].setBackground(new Color(50,50,50));
-            answer[i].setForeground(new Color(55,55,55));
-            answer[i].setFont(new Font("MV Boli",Font.PLAIN,35));
+        for (int i = 0; i < 4; i++) {
+            answer[i].setBounds(125, 100 + x, 500, 100);
+            answer[i].setBackground(new Color(50, 50, 50));
+            answer[i].setForeground(new Color(55, 55, 55));
+            answer[i].setFont(new Font("MV Boli", Font.PLAIN, 20));
             answer[i].setText("Test");
             x += 100;
             frame.add(answer[i]);
@@ -254,21 +232,167 @@ public class GUI extends JFrame implements ActionListener {
         frame.add(button2);
         frame.add(button3);
         frame.add(button4);
+
+        frame.add(playerNameLabel);
         frame.add(time_label);
-        
 
     }
-    public void start(){
+
+    private void initListeners() {
+        newGameButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                newGame();
+
+            }
+        });
+
+        quitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(1);
+            }
+        });
+
+        highScoreButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                highScoreScreen();
+
+            }
+        });
+
+
+        playerButton[0].addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //  doneButton.setVisible(true);
+                addPlayers(1);
+            }
+        });
+
+
+        playerButton[1].addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //  doneButton.setVisible(true);
+                addPlayers(2);
+            }
+        });
+
+
+        doneButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String text = playerName.getText();
+                String playerName = text.split(":")[1];
+                System.out.println(playerName);
+
+                game.addPlayer(playerName);
+
+                setVisible(false);
+                frame.setVisible(true);
+
+                initGame();
+            }
+        });
+
+
+        button1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                playerAnswers(0);
+            }
+        });
+
+        button2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                playerAnswers(1);
+            }
+        });
+
+        button3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                playerAnswers(2);
+            }
+        });
+
+        button4.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                playerAnswers(3);
+            }
+        });
+
+    }
+
+
+    private void playerAnswers(int choice) {
+
+        String correctAnswer = currentQuestion.getAnswer();
+
+        //TODO prepei n bei diaforetiko logic gia kathe eidous paixnidiou, uparxon ulopoihsh einia gia tn tupos swstis apantisis
+        //User found a correct answer
+        if (correctAnswer.equals(currentQuestion.getChoices().get(choice))) {
+            game.getCurrentPlayer().addPoints(1000);
+        }
+
+        if (!currentQuestionSet.isEmpty()) {
+            currentQuestion = currentQuestionSet.remove(0);
+            questionLabel.setText(currentQuestion.getQuestion());
+
+            ArrayList<String> questionChoices = currentQuestion.getChoices();
+
+            for (int i = 0; i < questionChoices.size(); i++) {
+                answer[i].setText(questionChoices.get(i));
+            }
+            Player player = game.getCurrentPlayer();
+            playerNameLabel.setText("Current Player:" + player.getPlayerName() + ", Current Points: " + player.getPoints());
+        } else {
+            System.out.println("GAME FINISHED, total points gathered " + game.getCurrentPlayer().getPoints());
+            Player player = game.getCurrentPlayer();
+            JOptionPane.showMessageDialog(frame, "Player " + player.getPlayerName() + " has won " + player.getPoints() + " points");
+            //Na 3anapaei stn arxikh pou dialegei game
+        }
+
+    }
+
+    private void initGame() {
+
+        String category = game.getRandomCategory();
+        gameTypeLabel.setText(category);
+        currentQuestionSet = game.getQuestionsBasedOnCategory();
+
+        currentQuestion = currentQuestionSet.remove(0);
+
+        questionLabel.setText(currentQuestion.getQuestion());
+
+        ArrayList<String> questionChoices = currentQuestion.getChoices();
+
+        for (int i = 0; i < questionChoices.size(); i++) {
+            answer[i].setText(questionChoices.get(i));
+        }
+
+        Player player = game.getCurrentPlayer();
+
+        playerNameLabel.setText("Current Player:" + player.getPlayerName() + ", Current Points: " + player.getPoints());
+
+    }
+
+
+    public void start() {
         setVisible(true);
     }
 
     //updates starting frame to player number choice and then starts the game's frame
-    public void newGame(){
+    public void newGame() {
         remove(newGameButton);
         remove(highScoreButton);
         remove(quitButton);
 
-        for(int i = 0; i<maxNumOfPlayers; i++){
+        for (int i = 0; i < maxNumOfPlayers; i++) {
             playerPanel.add(playerButton[i]);
         }
         playerPanel.add(backgroundImage);
@@ -280,230 +404,38 @@ public class GUI extends JFrame implements ActionListener {
     }
 
 
-
-
-
-
-    public void initQuestions() {
-        ArrayList<Question> questionSet = new ArrayList<Question>();
-        ArrayList<Question> questionSet2 = new ArrayList<Question>();
-        String question1 = "A = ?";
-        String[] choices1 = {"A", "B", "C", "D"};
-        questionSet.add(new Question(question1, "A", choices1));
-        String question2 = "What is the Capital of Germany?";
-        String[] choices2 = {"London", "Paris", "Berlin", "Athens"};
-        questionSet.add(new Question(question2, "Berlin", choices2));
-        String question3 = "How many is 'a dozen' eggs?";
-        String[] choices3 = {"10", "5", "12", "8"};
-        questionSet.add(new Question(question3, "12", choices3));
-        String question3b = "15+15x2?";
-        String[] choices3b = {"60", "30", "45", "75"};
-        questionSet.add(new Question(question3b, "45", choices3b));
-        String question4 = "Which one is a compression method?";
-        String[] choices4 = {"Neural network", "Huffman", "Polio", "DFT"};
-        questionSet2.add(new Question(question4, "Huffman", choices4));
-        String question5 = "1 = ?";
-        String[] choices5 = {"10", "11", "one", "01"};
-        questionSet2.add(new Question(question5, "01", choices5));
-        String question6 = "What is a 'kimura'";
-        String[] choices6 = {"Hand-lock technique", "Bike stunt", "Disease", "TV brand"};
-        questionSet2.add(new Question(question6, "Hand-lock technique", choices6));
-        String question7 = "What object is the heaviest?";
-        String[] choices7 = {"Earth", "Joe mama", "Mnt. Everest", "Andromeda"};
-        questionSet2.add(new Question(question7, "Andromeda", choices7));
-        Collections.shuffle(questionSet);
-        Collections.shuffle(questionSet2);
-
-        ArrayList<String> roundCategories = new ArrayList<>();
-        roundCategories.add("Science");
-        roundCategories.add("History");
-        //roundCategories.add("Sports");
-        //roundCategories.add("Cinema");
-        //roundCategories.add("Business");
-        //Collections.shuffle(roundCategories);
-        questionsPerCategory.put(roundCategories.get(0), questionSet);
-        questionsPerCategory.put(roundCategories.get(1), questionSet2);
-    }
-
-    public void startQuestion(int roundType) throws InterruptedException {
-
-
-        //Prints a Question
-        for (int counter = 0; counter < 2; counter++) {
-            int questionCounter = counter + 1;
-            int zeroOrOne = (int) Math.round(Math.random() * 2);
-            String category = roundCategory(zeroOrOne);//Get the category of questions and display it to the user
-
-            gameTypeLabel.setText( category +"-"+ rounds.get(roundType).getRoundType());
-
-            Question question = null;
-            //Retrieve the question that is going to be used for the game
-            //Check the questionsPerCategory arraylist of questions if the size is 1 because there is case that all 4 questions of the same category can be played. In that case the counter for the least question is going
-            //to be 1 but the question is located at the 0 index.
-            if (questionsPerCategory.get(category).size() == 1) {
-                question = questionsPerCategory.get(category).get(0);
-            } else {
-                question = questionsPerCategory.get(category).get(counter);
-            }
-
-
-            questionLabel.setText( questionCounter + " : " + question.getQuestion());//Print out the question for the specific category
-            //Stores number of choices for a given question, this help us out later
-            int numOfChoices = question.getChoices().size();//Number of possible answers
-            for(int i = 0; i<numOfChoices; i++) {
-                answer[i].setText(question.getChoices().get(i));
-            }
-            //Sets the right Answer
-            ArrayList<String> choices = question.getChoices();
-            String correctAnswer = question.getAnswer();//Get the correct answer for the question that is chosen
-            int correctAnswerNumber = choices.indexOf(correctAnswer) + 1;
-            // Sets each players answer
-            for (int player = 0; player < players.size(); player++) {
-                //If the round type is Ποντάρισμα get the bet of the player
-                if (rounds.get(roundType).getRoundType().equals("Bet")) {
-                    System.out.println("\n" + players.get(player).getPlayerName() + "'s bet is : ");
-                    int bet = bet();//Get the bet of the player
-                    System.out.println("\n" + players.get(player).getPlayerName() + "'s answer is : ");
-                    players.get(player).setAnswer(answer());//Set the answer of the player from the keyboard
-                    //If the aswer that is provided is correct increase the points of the player to the corresponding bet.
-                    if (players.get(player).getAnswer() == correctAnswerNumber) {
-                        // System.out.println("\n"+players.get(player).getPlayerName() + " got it right!");
-                        players.get(player).addPoints(bet);
-                    } else {
-                        //System.out.println("\n"+players.get(player).getPlayerName()+" got it wrong!");
-                        //The player has aswered incorrectly, remove the points that he bet.
-                        players.get(player).removePoints(bet);
-                    }
-                } else {
-                    ////If the round type is Σωστή Απάντηση
-                    TimeUnit.SECONDS.sleep(2);
-                    System.out.println("\n" + players.get(player).getPlayerName() + "'s answer is : ");
-                    players.get(player).setAnswer(answer());//Retrieve the answer of the player
-                    if (players.get(player).getAnswer() == correctAnswerNumber) {
-                        //System.out.println("\n"+players.get(player).getPlayerName() + " got it right!");
-                        players.get(player).addPoints(1000);
-                    }//else{
-                    //System.out.println("\n"+players.get(player).getPlayerName()+" got it wrong!");
-                    //}
-
-                }
-            }
-
-
-            //See what the correct answer is
-            System.out.println("And the correct answer isssssss ");
-
-            System.out.println(+correctAnswerNumber + " : " + correctAnswer);
-
-
-            clearQuestionSet(counter, category);
-        }
-
-
-    }
-    public String roundCategory(int category) {
-        if (category == 0) {
-            return "Science";
-
-        } else
-            return "History";
-    }
-
-    public int answer() {
-        Scanner scanner = new Scanner(System.in);
-        int answer = scanner.nextInt();
-        switch (answer) {
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-                return answer;
-            default:
-                System.out.println("Unavailable answer please try again");
-                return answer();
-
-        }
-    }
-
-    public int bet() {
-        Scanner scanner = new Scanner(System.in);
-        int bet = scanner.nextInt();
-        switch (bet) {
-            case 250:
-                System.out.println("Bet of 250 points!");
-                return bet;
-            case 500:
-                System.out.println("Bet of 500 points!");
-                return bet;
-            case 750:
-                System.out.println("Bet of 750 points!");
-                return bet;
-            case 1000:
-                System.out.println("Bet of 1000 points!");
-                return bet;
-            default:
-                System.out.println("Unavailable bet please try again");
-                return bet();//Unavailable option repeat the betting process.
-
-        }
-    }
-
-    private void clearQuestionSet(int counter, String category) {
-        //remove question from array
-        if (category.equals("Science")) {
-            if (questionSet.size() > 1)
-                questionSet.remove(counter);
-            else {
-                questionSet.remove(0);
-            }
-        } else {
-            if (questionSet2.size() > 1) {
-                questionSet2.remove(counter);
-            } else {
-                questionSet2.remove(0);
-            }
-
-        }
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
-        try {
-            startQuestion(1);
-        } catch (InterruptedException interruptedException) {
-            interruptedException.printStackTrace();
-        }
+//        try {
+//            startQuestion(1);
+//        } catch (InterruptedException interruptedException) {
+//            interruptedException.printStackTrace();
+//        }
 
 
     }
 
-    public void highScoreScreen(){
+    public void highScoreScreen() {
         //logic for high score
     }
+
     public void addPlayers(int playerCount) {
-        for(int i = 0; i < playerCount; i++){
+        for (int i = 0; i < playerCount; i++) {
             playerPanel.remove(playerButton[i]);
         }
 
         int counter = 1;
         playerName.setText("Player " + counter + " enter Nickname : ");
         playerPanel.add(playerName);
+        playerPanel.add(doneButton);
+        doneButton.setVisible(true);
         revalidate();
-        while(counter<=playerCount) {
-            counter++;
-            playerName.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    String text = playerName.getText();
-                    players.add(new Player(text, 0));
-
-                }
-            });
-
-        }
     }
 
+
 }
+
+
         /*
             private JLabel answer2;
             private JLabel answer3;
