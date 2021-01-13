@@ -15,7 +15,6 @@ public class GUI extends JFrame implements ActionListener {
     private int playersToPlay;
     private ArrayList<Question> currentQuestionSet;
     private Question currentQuestion;
-    private final ArrayList<Round> rounds;
     private final ArrayList<Player> players;
 
     private GameType gameType;
@@ -26,11 +25,11 @@ public class GUI extends JFrame implements ActionListener {
 
     private JButton button1, button2, button3, button4;
     private JButton newGameButton, highScoreButton, quitButton;
-    private JButton doneButton;
+    private JButton doneButton,betButton;
     private JButton gameType1Button, gameType2Button, gameType3Button;
     private JButton[] playerButton;
 
-    private JTextField gameTypeLabel, playerName;
+    private JTextField gameTypeLabel, playerName,betTypeLabel;
     private JTextArea questionLabel;
     private JLabel[] answer;
     private JLabel time_label;
@@ -41,25 +40,22 @@ public class GUI extends JFrame implements ActionListener {
 
     private JLabel backgroundImage, backgroundImage1, backgroundImage2;
 
+    private int currentBet;
+
     public GUI(Game game) throws IOException {
         this.game = game;
 
         players = new ArrayList<Player>();
 
         initComponents();
+        init1PlayerGameFrame();
         initGameTypeFrame();
         initListeners();
 
         //Hash map that pairs a set of questions to a category
         currentQuestionSet = new ArrayList<>();
 
-        rounds = new ArrayList<Round>();
-        rounds.add(new Round("Right Answer"));
-        rounds.add(new Round("Bet"));
-        rounds.add(new Round("Thermometer"));
-        rounds.add(new Round("Stop The Clock"));
-        rounds.add(new Round("Fastest Answer"));
-        Collections.shuffle(rounds);
+
 
     }
 
@@ -67,24 +63,9 @@ public class GUI extends JFrame implements ActionListener {
         //GUI Quiz components
         frame = new JFrame();
 
-
-        gameTypeLabel = new JTextField("\\u00C3");
-        questionLabel = new JTextArea();
-
         doneButton = new JButton("Done");
 
 
-        button1 = new JButton();
-        button2 = new JButton();
-        button3 = new JButton();
-        button4 = new JButton();
-
-        answer = new JLabel[4];
-        for (int i = 0; i < 4; i++) {
-            answer[i] = new JLabel("Test");
-        }
-
-        time_label = new JLabel();
         playerNameLabel = new JLabel();
         nameLabel = new JLabel();
         numOfPlayersLabel = new JLabel();
@@ -199,11 +180,54 @@ public class GUI extends JFrame implements ActionListener {
         numOfPlayersLabel.setHorizontalAlignment(JTextField.CENTER);
         numOfPlayersLabel.setText("Choose Number Of Players");
 
+
+
+
+    }
+
+
+    private void init1PlayerGameFrame(){
+
+        button1 = new JButton();
+        button2 = new JButton();
+        button3 = new JButton();
+        button4 = new JButton();
+
+        betButton = new JButton("Bet");
+
+        betTypeLabel = new JTextField();
+
+        answer = new JLabel[4];
+        for (int i = 0; i < 4; i++) {
+            answer[i] = new JLabel("Test");
+        }
+
+        time_label = new JLabel();
+
+        gameTypeLabel = new JTextField("\\u00C3");
+        questionLabel = new JTextArea();
+
+
         //Quiz frame parameters
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(650, 650);
         frame.setLayout(new BorderLayout());
         frame.setBackground(Color.WHITE);
+
+
+        //betTypeLabel.setBounds(150, 200, 350, 100);
+        betTypeLabel.setFocusable(true);
+        betTypeLabel.setBackground(new Color(55, 55, 55));
+        betTypeLabel.setForeground(new Color(255, 255, 255));
+        betTypeLabel.setFont(new Font("ARIAL", Font.BOLD, 30));
+        betTypeLabel.setHorizontalAlignment(JTextField.CENTER);
+        betTypeLabel.setBorder(BorderFactory.createBevelBorder(1));
+        betTypeLabel.setText("");
+        betTypeLabel.setEditable(true);
+        betTypeLabel.setPreferredSize(new Dimension(300,150));
+
+        betButton.setPreferredSize(new Dimension(200,150));
+        betButton.setFont(new Font("MV Boli", Font.BOLD, 20));
 
         gameTypeLabel.setBounds(0, 0, 650, 50);
         gameTypeLabel.setBackground(new Color(25, 25, 25));
@@ -288,8 +312,9 @@ public class GUI extends JFrame implements ActionListener {
         frame.add(playerNameLabel);
         frame.add(time_label);
 
+        frame.add(betTypeLabel,BorderLayout.PAGE_START);
+        frame.add(betButton,BorderLayout.PAGE_END);
     }
-
 
     private void initGameTypeFrame() throws IOException {
         BufferedImage myPicture = ImageIO.read(new File("images/basic_frame_image.jpg"));
@@ -440,7 +465,10 @@ public class GUI extends JFrame implements ActionListener {
                 if (playersToPlay == 1) {
                     gameType = GameType.STOP_ALARM;
 
+                    gameTypeFrame.setVisible(false);
+                    frame.setVisible(true);
 
+                    init1PlayerGame();
                 } else {
 
                 }
@@ -452,6 +480,54 @@ public class GUI extends JFrame implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
                 gameType = GameType.BETTING;
+
+                gameTypeFrame.setVisible(false);
+                frame.setVisible(true);
+
+                init1PlayerGame();
+            }
+        });
+
+        betButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                questionLabel.setText(currentQuestion.getQuestion());
+
+                ArrayList<String> questionChoices = currentQuestion.getChoices();
+
+                for (int i = 0; i < questionChoices.size(); i++) {
+                    answer[i].setText(questionChoices.get(i));
+                }
+
+                Player player = game.getCurrentPlayer();
+
+                playerNameLabel.setText("Current Player:" + player.getPlayerName() + ", Current Points: " + player.getPoints());
+
+
+                questionLabel.setVisible(true);
+                button1.setVisible(true);
+                button2.setVisible(true);
+                button3.setVisible(true);
+                button4.setVisible(true);
+                playerNameLabel.setVisible(true);
+                playerNameLabel.setVisible(true);
+
+
+                for (int i = 0; i < 4; i++) {
+                    answer[i].setVisible(true);
+                }
+
+
+                betTypeLabel.setVisible(false);
+                betButton.setVisible(false);
+
+                try{
+                    currentBet = Integer.parseInt(betTypeLabel.getText());
+                }catch (NumberFormatException numberFormatException){
+                    numberFormatException.printStackTrace();
+                    currentBet = 0;
+                }
+
             }
         });
 
@@ -462,10 +538,6 @@ public class GUI extends JFrame implements ActionListener {
     private void playerAnswers(int choice) {
 
         String correctAnswer = currentQuestion.getAnswer();
-
-        //TODO prepei n bei diaforetiko logic gia kathe eidous paixnidiou, uparxon ulopoihsh einia gia tn tupos swstis apantisis
-
-
         if (gameType == GameType.CORRECT_ANSWER) {
             //User found a correct answer
             if (correctAnswer.equals(currentQuestion.getChoices().get(choice))) {
@@ -489,6 +561,42 @@ public class GUI extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(frame, "Player " + player.getPlayerName() + " has won " + player.getPoints() + " points");
                 //Na 3anapaei stn arxikh pou dialegei game
             }
+        }else if(gameType == GameType.BETTING){
+            if (correctAnswer.equals(currentQuestion.getChoices().get(choice))) {
+                game.getCurrentPlayer().addPoints(currentBet);
+            }else{
+                game.getCurrentPlayer().addPoints(-currentBet);
+            }
+
+            if (!currentQuestionSet.isEmpty()) {
+                currentQuestion = currentQuestionSet.remove(0);
+
+                time_label.setVisible(false);
+                questionLabel.setVisible(false);
+                button1.setVisible(false);
+                button2.setVisible(false);
+                button3.setVisible(false);
+                button4.setVisible(false);
+                playerNameLabel.setVisible(false);
+                playerNameLabel.setVisible(false);
+
+
+                for (int i = 0; i < 4; i++) {
+                    answer[i].setVisible(false);
+                }
+
+                betTypeLabel.setVisible(true);
+                betButton.setVisible(true);
+
+
+            } else {
+                System.out.println("GAME FINISHED, total points gathered " + game.getCurrentPlayer().getPoints());
+                Player player = game.getCurrentPlayer();
+                JOptionPane.showMessageDialog(frame, "Player " + player.getPlayerName() + " has won " + player.getPoints() + " points");
+                //Na 3anapaei stn arxikh pou dialegei game
+            }
+
+
         }
 
 
@@ -496,27 +604,58 @@ public class GUI extends JFrame implements ActionListener {
 
     private void init1PlayerGame() {
 
-        if (gameType == GameType.CORRECT_ANSWER) {
+        if (gameType == GameType.CORRECT_ANSWER ) {
             time_label.setVisible(false);
+            betTypeLabel.setVisible(false);
+            betButton.setVisible(false);
+
+            String category = game.getRandomCategory();
+            gameTypeLabel.setText(category);
+            currentQuestionSet = game.getQuestionsBasedOnCategory();
+
+            currentQuestion = currentQuestionSet.remove(0);
+
+            questionLabel.setText(currentQuestion.getQuestion());
+
+            ArrayList<String> questionChoices = currentQuestion.getChoices();
+
+            for (int i = 0; i < questionChoices.size(); i++) {
+                answer[i].setText(questionChoices.get(i));
+            }
+
+            Player player = game.getCurrentPlayer();
+
+            playerNameLabel.setText("Current Player:" + player.getPlayerName() + ", Current Points: " + player.getPoints());
+        }else if(gameType == GameType.BETTING){
+            time_label.setVisible(false);
+            questionLabel.setVisible(false);
+            button1.setVisible(false);
+            button2.setVisible(false);
+            button3.setVisible(false);
+            button4.setVisible(false);
+            playerNameLabel.setVisible(false);
+            playerNameLabel.setVisible(false);
+
+
+            for (int i = 0; i < 4; i++) {
+                answer[i].setVisible(false);
+            }
+
+            betTypeLabel.setVisible(true);
+            betButton.setVisible(true);
+
+            String category = game.getRandomCategory();
+            gameTypeLabel.setText(category);
+            currentQuestionSet = game.getQuestionsBasedOnCategory();
+
+            currentQuestion = currentQuestionSet.remove(0);
+
+
         }
 
-        String category = game.getRandomCategory();
-        gameTypeLabel.setText(category);
-        currentQuestionSet = game.getQuestionsBasedOnCategory();
 
-        currentQuestion = currentQuestionSet.remove(0);
 
-        questionLabel.setText(currentQuestion.getQuestion());
 
-        ArrayList<String> questionChoices = currentQuestion.getChoices();
-
-        for (int i = 0; i < questionChoices.size(); i++) {
-            answer[i].setText(questionChoices.get(i));
-        }
-
-        Player player = game.getCurrentPlayer();
-
-        playerNameLabel.setText("Current Player:" + player.getPlayerName() + ", Current Points: " + player.getPoints());
 
     }
 
