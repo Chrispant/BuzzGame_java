@@ -24,6 +24,7 @@ public class GUI extends JFrame implements ActionListener {
     private JPanel playerPanel;
 
     private JButton button1, button2, button3, button4;
+    private JButton button5, button6, button7, button8;
     private JButton newGameButton, highScoreButton, quitButton;
     private JButton doneButton,betButton;
     private JButton gameType1Button, gameType2Button, gameType3Button;
@@ -36,7 +37,7 @@ public class GUI extends JFrame implements ActionListener {
 
     private JLabel playerNameLabel, numOfPlayersLabel, nameLabel;
 
-    private JFrame frame, gameTypeFrame;
+    private JFrame frame, gameTypeFrame, frame2;
 
     private JLabel backgroundImage, backgroundImage1, backgroundImage2;
 
@@ -49,6 +50,7 @@ public class GUI extends JFrame implements ActionListener {
 
         initComponents();
         init1PlayerGameFrame();
+        twoPlayersFrame();
         initGameTypeFrame();
         initListeners();
 
@@ -248,37 +250,33 @@ public class GUI extends JFrame implements ActionListener {
         questionLabel.setEditable(false);
         questionLabel.setText("Question");////////////////////////////////////////////////////////
 
-        button1.setBounds(0, 100, 100, 80);
-        button1.setFont(new Font("MV Boli", Font.BOLD, 35));
+        button1.setBounds(0, 100, 45, 80);
+        button1.setFont(new Font("MV Boli", Font.BOLD, 15));
         button1.setMnemonic(KeyEvent.VK_Q);
-        button1.setMnemonic(KeyEvent.VK_U);
         button1.setFocusable(false);
         button1.addActionListener(this);
-        button1.setText("1");
+        button1.setText("Q");
 
-        button2.setBounds(0, 200, 100, 80);
-        button2.setFont(new Font("MV Boli", Font.BOLD, 35));
+        button2.setBounds(0, 200, 45, 80);
+        button2.setFont(new Font("MV Boli", Font.BOLD, 12));
         button2.setMnemonic(KeyEvent.VK_W);
-        button2.setMnemonic(KeyEvent.VK_I);
         button2.setFocusable(false);
         button2.addActionListener(this);
-        button2.setText("2");
+        button2.setText("W");
 
-        button3.setBounds(0, 300, 100, 80);
-        button3.setFont(new Font("MV Boli", Font.BOLD, 35));
+        button3.setBounds(0, 300, 45, 80);
+        button3.setFont(new Font("MV Boli", Font.BOLD, 15));
         button3.setMnemonic(KeyEvent.VK_E);
-        button3.setMnemonic(KeyEvent.VK_O);
         button3.setFocusable(false);
         button3.addActionListener(this);
-        button3.setText("3");
+        button3.setText("E");
 
-        button4.setBounds(0, 400, 100, 80);
-        button4.setFont(new Font("MV Boli", Font.BOLD, 35));
+        button4.setBounds(0, 400, 45, 80);
+        button4.setFont(new Font("MV Boli", Font.BOLD, 15));
         button4.setMnemonic(KeyEvent.VK_R);
-        button4.setMnemonic(KeyEvent.VK_P);
         button4.setFocusable(false);
         // button4.addActionListener(this);
-        button4.setText("4");
+        button4.setText("R");
 
         playerNameLabel.setBounds(0, 500, 400, 25);
         playerNameLabel.setFont(new Font("MV Boli", Font.BOLD, 15));
@@ -314,6 +312,68 @@ public class GUI extends JFrame implements ActionListener {
 
         frame.add(betTypeLabel,BorderLayout.PAGE_START);
         frame.add(betButton,BorderLayout.PAGE_END);
+    }
+
+
+    private void twoPlayersFrame(){
+        frame2 = new JFrame();
+
+        frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame2.setSize(650, 650);
+        frame2.setLayout(new BorderLayout());
+        frame2.setBackground(Color.WHITE);
+
+        button5 = new JButton();
+        button6 = new JButton();
+        button7 = new JButton();
+        button8 = new JButton();
+
+        button5.setBounds(50, 100, 45, 80);
+        button5.setFont(new Font("MV Boli", Font.BOLD, 15));
+        button5.setMnemonic(KeyEvent.VK_U);
+        button5.setFocusable(false);
+        button5.addActionListener(this);
+        button5.setText("U");
+
+        button6.setBounds(50, 200, 45, 80);
+        button6.setFont(new Font("MV Boli", Font.BOLD, 15));
+        button6.setMnemonic(KeyEvent.VK_I);
+        button6.setFocusable(false);
+        button6.addActionListener(this);
+        button6.setText("I");
+
+        button7.setBounds(50, 300, 45, 80);
+        button7.setFont(new Font("MV Boli", Font.BOLD, 15));
+        button7.setMnemonic(KeyEvent.VK_O);
+        button7.setFocusable(false);
+        button7.addActionListener(this);
+        button7.setText("O");
+
+        button8.setBounds(50, 400, 45, 80);
+        button8.setFont(new Font("MV Boli", Font.BOLD, 15));
+        button8.setMnemonic(KeyEvent.VK_P);
+        button8.setFocusable(false);
+        // button4.addActionListener(this);
+        button8.setText("P");
+        frame2.add(gameTypeLabel);
+        frame2.add(questionLabel);
+        frame2.add(button1);
+        frame2.add(button2);
+        frame2.add(button3);
+        frame2.add(button4);
+        frame2.add(button5);
+        frame2.add(button6);
+        frame2.add(button7);
+        frame2.add(button8);
+
+        frame2.add(playerNameLabel);
+        frame2.add(time_label);
+
+        frame2.add(betTypeLabel,BorderLayout.PAGE_START);
+        frame2.add(betButton,BorderLayout.PAGE_END);
+        frame2.setVisible(true);
+
+
     }
 
     private void initGameTypeFrame() throws IOException {
@@ -443,6 +503,35 @@ public class GUI extends JFrame implements ActionListener {
         });
 
 
+        button5.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                playerAnswers(0);
+            }
+        });
+
+        button6.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                playerAnswers(1);
+            }
+        });
+
+        button7.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                playerAnswers(2);
+            }
+        });
+
+        button8.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                playerAnswers(3);
+            }
+        });
+
+
         gameType1Button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -450,6 +539,7 @@ public class GUI extends JFrame implements ActionListener {
                     gameType = GameType.CORRECT_ANSWER;
                     gameTypeFrame.setVisible(false);
                     frame.setVisible(true);
+
 
                     init1PlayerGame();
 
