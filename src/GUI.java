@@ -25,6 +25,7 @@ public class GUI extends JFrame implements ActionListener {
     private JButton button1, button2, button3, button4;
     private JButton newGameButton, highScoreButton, quitButton;
     private JButton doneButton;
+    private JButton gameType1Button,gameType2Button,gameType3Button;
     private JButton[] playerButton;
 
     private JTextField gameTypeLabel, playerName;
@@ -34,7 +35,7 @@ public class GUI extends JFrame implements ActionListener {
 
     private JLabel playerNameLabel, numOfPlayersLabel, nameLabel;
 
-    private JFrame frame;
+    private JFrame frame,gameTypeFrame;
 
     private JLabel backgroundImage,backgroundImage1,backgroundImage2;
 
@@ -44,6 +45,7 @@ public class GUI extends JFrame implements ActionListener {
         players = new ArrayList<Player>();
 
         initComponents();
+        initGameTypeFrame();
         initListeners();
 
         //Hash map that pairs a set of questions to a category
@@ -63,10 +65,13 @@ public class GUI extends JFrame implements ActionListener {
         //GUI Quiz components
         frame = new JFrame();
 
+
         gameTypeLabel = new JTextField("\\u00C3");
         questionLabel = new JTextArea();
 
         doneButton = new JButton("Done");
+
+
 
         button1 = new JButton();
         button2 = new JButton();
@@ -117,6 +122,8 @@ public class GUI extends JFrame implements ActionListener {
         add(doneButton);
 
         doneButton.setVisible(false);
+
+
 
         //Gui Starting frame Components///////////////////////////////////////////////////////////
         newGameButton = new JButton("New game");
@@ -283,6 +290,59 @@ public class GUI extends JFrame implements ActionListener {
 
     }
 
+
+    private void initGameTypeFrame() throws IOException{
+        //Gui image components
+        BufferedImage myPicture = ImageIO.read(new File("images/basic_frame_image.jpg"));
+        backgroundImage = new JLabel(new ImageIcon(myPicture));
+
+        gameTypeFrame = new JFrame();
+
+        gameTypeFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        gameTypeFrame.setSize(650, 650);
+        gameTypeFrame.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        gameTypeFrame.setBackground(Color.WHITE);
+        gameTypeFrame.setLocationRelativeTo(null);
+
+
+        gameType1Button = new JButton();
+        gameType2Button = new JButton();
+        gameType3Button = new JButton();
+
+
+
+       // gameType1Button.setBounds(150, 50, 300, 150);
+        gameType1Button.setPreferredSize(new Dimension(150, 80));
+        gameType1Button.setFont(new Font("MV Boli", Font.BOLD, 15));
+        gameType1Button.setFocusable(false);
+
+
+        gameType2Button.setPreferredSize(new Dimension(150, 80));
+        gameType2Button.setFont(new Font("MV Boli", Font.BOLD, 15));
+        gameType2Button.setFocusable(false);
+
+        gameType3Button.setPreferredSize(new Dimension(150, 80));
+        //gameType3Button.setBounds(150, 50, 300, 150);
+        gameType3Button.setFont(new Font("MV Boli", Font.BOLD, 15));
+        gameType3Button.setFocusable(false);
+
+        gameTypeFrame.add(backgroundImage);
+
+        JPanel jPanel = new JPanel();
+        jPanel.setLayout(new BoxLayout(jPanel,BoxLayout.Y_AXIS));
+
+        jPanel.add(gameType1Button);
+        jPanel.add(gameType2Button);
+        jPanel.add(gameType3Button);
+
+//        gameTypeFrame.add(jPanel);
+
+       gameTypeFrame.add(gameType1Button);
+       gameTypeFrame.add(gameType2Button);
+       gameTypeFrame.add(gameType3Button);
+
+    }
+
     private void initListeners() {
         newGameButton.addActionListener(new ActionListener() {
             @Override
@@ -331,6 +391,10 @@ public class GUI extends JFrame implements ActionListener {
         doneButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
+
+
+
                 String name = playerName.getText();
                 game.addPlayer(name);
                 System.out.println(name);
@@ -434,6 +498,23 @@ public class GUI extends JFrame implements ActionListener {
         updateFrame("Add Players");
     }
 
+    private void selectGameType(){
+        if(playersToPlay == 1){
+
+            gameType1Button.setText("Correct Answer");
+            gameType2Button.setText("Stop Alarm");
+            gameType3Button.setText("Betting");
+
+
+        }else{
+            gameType1Button.setText("Quick Answer");
+            gameType2Button.setText("Thermometro");
+            gameType3Button.setVisible(false);
+        }
+
+        gameTypeFrame.setVisible(true);
+    }
+
     public void updateFrame(String whichFrame){
         if(whichFrame.equals("Add Players")){
             remove(newGameButton);remove(highScoreButton);remove(quitButton);remove(backgroundImage);
@@ -474,9 +555,13 @@ public class GUI extends JFrame implements ActionListener {
 
         } else {
             setVisible(false);
-            frame.setVisible(true);
+           // frame.setVisible(true);
 
-            initGame();
+
+            selectGameType();
+
+
+          //  initGame();
 
         }
     }
