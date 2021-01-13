@@ -1,10 +1,13 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -23,13 +26,15 @@ public class GUI extends JFrame implements ActionListener {
 
     private JPanel playerPanel;
 
+    private Timer timer;
+
     private JButton button1, button2, button3, button4;
     private JButton newGameButton, highScoreButton, quitButton;
-    private JButton doneButton,betButton;
+    private JButton doneButton, betButton;
     private JButton gameType1Button, gameType2Button, gameType3Button;
     private JButton[] playerButton;
 
-    private JTextField gameTypeLabel, playerName,betTypeLabel;
+    private JTextField gameTypeLabel, playerName, betTypeLabel;
     private JTextArea questionLabel;
     private JLabel[] answer;
     private JLabel time_label;
@@ -41,6 +46,10 @@ public class GUI extends JFrame implements ActionListener {
     private JLabel backgroundImage, backgroundImage1, backgroundImage2;
 
     private int currentBet;
+    private long milliseconds;
+    private boolean endOfTime;
+
+    private LocalDateTime startTime;
 
     public GUI(Game game) throws IOException {
         this.game = game;
@@ -54,7 +63,6 @@ public class GUI extends JFrame implements ActionListener {
 
         //Hash map that pairs a set of questions to a category
         currentQuestionSet = new ArrayList<>();
-
 
 
     }
@@ -181,12 +189,10 @@ public class GUI extends JFrame implements ActionListener {
         numOfPlayersLabel.setText("Choose Number Of Players");
 
 
-
-
     }
 
 
-    private void init1PlayerGameFrame(){
+    private void init1PlayerGameFrame() {
 
         button1 = new JButton();
         button2 = new JButton();
@@ -224,9 +230,9 @@ public class GUI extends JFrame implements ActionListener {
         betTypeLabel.setBorder(BorderFactory.createBevelBorder(1));
         betTypeLabel.setText("");
         betTypeLabel.setEditable(true);
-        betTypeLabel.setPreferredSize(new Dimension(300,150));
+        betTypeLabel.setPreferredSize(new Dimension(300, 150));
 
-        betButton.setPreferredSize(new Dimension(200,150));
+        betButton.setPreferredSize(new Dimension(200, 150));
         betButton.setFont(new Font("MV Boli", Font.BOLD, 20));
 
         gameTypeLabel.setBounds(0, 0, 650, 50);
@@ -312,8 +318,8 @@ public class GUI extends JFrame implements ActionListener {
         frame.add(playerNameLabel);
         frame.add(time_label);
 
-        frame.add(betTypeLabel,BorderLayout.PAGE_START);
-        frame.add(betButton,BorderLayout.PAGE_END);
+        frame.add(betTypeLabel, BorderLayout.PAGE_START);
+        frame.add(betButton, BorderLayout.PAGE_END);
     }
 
     private void initGameTypeFrame() throws IOException {
@@ -521,9 +527,9 @@ public class GUI extends JFrame implements ActionListener {
                 betTypeLabel.setVisible(false);
                 betButton.setVisible(false);
 
-                try{
+                try {
                     currentBet = Integer.parseInt(betTypeLabel.getText());
-                }catch (NumberFormatException numberFormatException){
+                } catch (NumberFormatException numberFormatException) {
                     numberFormatException.printStackTrace();
                     currentBet = 0;
                 }
@@ -561,10 +567,10 @@ public class GUI extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(frame, "Player " + player.getPlayerName() + " has won " + player.getPoints() + " points");
                 //Na 3anapaei stn arxikh pou dialegei game
             }
-        }else if(gameType == GameType.BETTING){
+        } else if (gameType == GameType.BETTING) {
             if (correctAnswer.equals(currentQuestion.getChoices().get(choice))) {
                 game.getCurrentPlayer().addPoints(currentBet);
-            }else{
+            } else {
                 game.getCurrentPlayer().addPoints(-currentBet);
             }
 
@@ -597,6 +603,68 @@ public class GUI extends JFrame implements ActionListener {
             }
 
 
+        } else {
+            timer.stop();
+            timer = null;
+            time_label.setText("timer 00:00");
+            if (correctAnswer.equals(currentQuestion.getChoices().get(choice))) {
+
+
+
+                double points = milliseconds * 0.2;
+                int playerPoints = (int) points;
+                if(endOfTime){
+                    playerPoints = 0;
+                }
+
+                game.getCurrentPlayer().addPoints(playerPoints);
+            }
+
+            if (!currentQuestionSet.isEmpty()) {
+                endOfTime = false;
+                currentQuestion = currentQuestionSet.remove(0);
+
+                questionLabel.setText(currentQuestion.getQuestion());
+
+                ArrayList<String> questionChoices = currentQuestion.getChoices();
+
+                for (int i = 0; i < questionChoices.size(); i++) {
+                    answer[i].setText(questionChoices.get(i));
+                }
+                Player player = game.getCurrentPlayer();
+                playerNameLabel.setText("Current Player:" + player.getPlayerName() + ", Current Points: " + player.getPoints());
+
+
+                startTime = LocalDateTime.now();
+
+                timer = new Timer(1, new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        LocalDateTime now = LocalDateTime.now();
+                        Duration duration = Duration.between(startTime, now);
+
+                        long seconds = duration.toSeconds();
+                         milliseconds = duration.toMillis();
+                        if (milliseconds == 5000) {
+                            JOptionPane.showMessageDialog(frame, "End of time 0 points gained even if you answered correct");
+                            endOfTime = true;
+                        }
+
+                        time_label.setText("Time: " + seconds + "");
+                    }
+                });
+
+
+                timer.start();
+
+            } else {
+                System.out.println("GAME FINISHED, total points gathered " + game.getCurrentPlayer().getPoints());
+                Player player = game.getCurrentPlayer();
+                JOptionPane.showMessageDialog(frame, "Player " + player.getPlayerName() + " has won " + player.getPoints() + " points");
+                //Na 3anapaei stn arxikh pou dialegei game
+            }
+
+
         }
 
 
@@ -604,29 +672,14 @@ public class GUI extends JFrame implements ActionListener {
 
     private void init1PlayerGame() {
 
-        if (gameType == GameType.CORRECT_ANSWER ) {
+        if (gameType == GameType.CORRECT_ANSWER) {
             time_label.setVisible(false);
             betTypeLabel.setVisible(false);
             betButton.setVisible(false);
 
-            String category = game.getRandomCategory();
-            gameTypeLabel.setText(category);
-            currentQuestionSet = game.getQuestionsBasedOnCategory();
+            start1PlayerGame();
 
-            currentQuestion = currentQuestionSet.remove(0);
-
-            questionLabel.setText(currentQuestion.getQuestion());
-
-            ArrayList<String> questionChoices = currentQuestion.getChoices();
-
-            for (int i = 0; i < questionChoices.size(); i++) {
-                answer[i].setText(questionChoices.get(i));
-            }
-
-            Player player = game.getCurrentPlayer();
-
-            playerNameLabel.setText("Current Player:" + player.getPlayerName() + ", Current Points: " + player.getPoints());
-        }else if(gameType == GameType.BETTING){
+        } else if (gameType == GameType.BETTING) {
             time_label.setVisible(false);
             questionLabel.setVisible(false);
             button1.setVisible(false);
@@ -651,12 +704,66 @@ public class GUI extends JFrame implements ActionListener {
             currentQuestion = currentQuestionSet.remove(0);
 
 
+        } else {
+            time_label.setVisible(true);
+            betTypeLabel.setVisible(false);
+            betButton.setVisible(false);
+
+            startTime = LocalDateTime.now();
+            start1PlayerGame();
+
+
+            timer = new Timer(1, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    LocalDateTime now = LocalDateTime.now();
+                    Duration duration = Duration.between(startTime, now);
+
+                    long seconds = duration.toSeconds();
+                    milliseconds = duration.toMillis();
+                    if (milliseconds == 5000) {
+                        JOptionPane.showMessageDialog(frame, "End of time 0 points gained even if you answer correct...");
+                        endOfTime = true;
+                    }
+
+                    time_label.setText("Time: " + seconds + "");
+                }
+            });
+
+
+            timer.start();
+
         }
 
 
+    }
 
+    protected String format(Duration duration) {
+        long hours = duration.toHours();
+        long mins = duration.minusHours(hours).toMinutes();
+        long seconds = duration.minusMinutes(mins).toMillis() / 1000;
+        return String.format("%02dh %02dm %02ds", hours, mins, seconds);
+    }
 
+    private void start1PlayerGame() {
 
+        String category = game.getRandomCategory();
+        gameTypeLabel.setText(category);
+        currentQuestionSet = game.getQuestionsBasedOnCategory();
+
+        currentQuestion = currentQuestionSet.remove(0);
+
+        questionLabel.setText(currentQuestion.getQuestion());
+
+        ArrayList<String> questionChoices = currentQuestion.getChoices();
+
+        for (int i = 0; i < questionChoices.size(); i++) {
+            answer[i].setText(questionChoices.get(i));
+        }
+
+        Player player = game.getCurrentPlayer();
+
+        playerNameLabel.setText("Current Player:" + player.getPlayerName() + ", Current Points: " + player.getPoints());
     }
 
 
