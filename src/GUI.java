@@ -11,12 +11,14 @@ import java.util.concurrent.TimeUnit;
 public class GUI extends JFrame implements ActionListener {
     //newGame game;
     final private int maxNumOfPlayers = 2;
-    private  int nextPlayer = 0;
+    private int nextPlayer = 0;
     private int playersToPlay;
     private ArrayList<Question> currentQuestionSet;
     private Question currentQuestion;
     private final ArrayList<Round> rounds;
     private final ArrayList<Player> players;
+
+    private GameType gameType;
 
     private Game game;
 
@@ -25,7 +27,7 @@ public class GUI extends JFrame implements ActionListener {
     private JButton button1, button2, button3, button4;
     private JButton newGameButton, highScoreButton, quitButton;
     private JButton doneButton;
-    private JButton gameType1Button,gameType2Button,gameType3Button;
+    private JButton gameType1Button, gameType2Button, gameType3Button;
     private JButton[] playerButton;
 
     private JTextField gameTypeLabel, playerName;
@@ -35,9 +37,9 @@ public class GUI extends JFrame implements ActionListener {
 
     private JLabel playerNameLabel, numOfPlayersLabel, nameLabel;
 
-    private JFrame frame,gameTypeFrame;
+    private JFrame frame, gameTypeFrame;
 
-    private JLabel backgroundImage,backgroundImage1,backgroundImage2;
+    private JLabel backgroundImage, backgroundImage1, backgroundImage2;
 
     public GUI(Game game) throws IOException {
         this.game = game;
@@ -70,7 +72,6 @@ public class GUI extends JFrame implements ActionListener {
         questionLabel = new JTextArea();
 
         doneButton = new JButton("Done");
-
 
 
         button1 = new JButton();
@@ -122,7 +123,6 @@ public class GUI extends JFrame implements ActionListener {
         add(doneButton);
 
         doneButton.setVisible(false);
-
 
 
         //Gui Starting frame Components///////////////////////////////////////////////////////////
@@ -291,8 +291,7 @@ public class GUI extends JFrame implements ActionListener {
     }
 
 
-    private void initGameTypeFrame() throws IOException{
-        //Gui image components
+    private void initGameTypeFrame() throws IOException {
         BufferedImage myPicture = ImageIO.read(new File("images/basic_frame_image.jpg"));
         backgroundImage = new JLabel(new ImageIcon(myPicture));
 
@@ -309,9 +308,6 @@ public class GUI extends JFrame implements ActionListener {
         gameType2Button = new JButton();
         gameType3Button = new JButton();
 
-
-
-       // gameType1Button.setBounds(150, 50, 300, 150);
         gameType1Button.setPreferredSize(new Dimension(150, 80));
         gameType1Button.setFont(new Font("MV Boli", Font.BOLD, 15));
         gameType1Button.setFocusable(false);
@@ -322,24 +318,14 @@ public class GUI extends JFrame implements ActionListener {
         gameType2Button.setFocusable(false);
 
         gameType3Button.setPreferredSize(new Dimension(150, 80));
-        //gameType3Button.setBounds(150, 50, 300, 150);
         gameType3Button.setFont(new Font("MV Boli", Font.BOLD, 15));
         gameType3Button.setFocusable(false);
 
         gameTypeFrame.add(backgroundImage);
 
-        JPanel jPanel = new JPanel();
-        jPanel.setLayout(new BoxLayout(jPanel,BoxLayout.Y_AXIS));
-
-        jPanel.add(gameType1Button);
-        jPanel.add(gameType2Button);
-        jPanel.add(gameType3Button);
-
-//        gameTypeFrame.add(jPanel);
-
-       gameTypeFrame.add(gameType1Button);
-       gameTypeFrame.add(gameType2Button);
-       gameTypeFrame.add(gameType3Button);
+        gameTypeFrame.add(gameType1Button);
+        gameTypeFrame.add(gameType2Button);
+        gameTypeFrame.add(gameType3Button);
 
     }
 
@@ -393,14 +379,12 @@ public class GUI extends JFrame implements ActionListener {
             public void actionPerformed(ActionEvent e) {
 
 
-
-
                 String name = playerName.getText();
                 game.addPlayer(name);
                 System.out.println(name);
                 playerName.setText("");
                 nextPlayer++;
-                playerToName(nextPlayer+1);
+                playerToName(nextPlayer + 1);
             }
         });
 
@@ -433,6 +417,45 @@ public class GUI extends JFrame implements ActionListener {
             }
         });
 
+
+        gameType1Button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (playersToPlay == 1) {
+                    gameType = GameType.CORRECT_ANSWER;
+                    gameTypeFrame.setVisible(false);
+                    frame.setVisible(true);
+
+                    init1PlayerGame();
+
+                } else {
+
+                }
+            }
+        });
+
+        gameType2Button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (playersToPlay == 1) {
+                    gameType = GameType.STOP_ALARM;
+
+
+                } else {
+
+                }
+            }
+        });
+
+
+        gameType3Button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                gameType = GameType.BETTING;
+            }
+        });
+
+
     }
 
 
@@ -441,32 +464,41 @@ public class GUI extends JFrame implements ActionListener {
         String correctAnswer = currentQuestion.getAnswer();
 
         //TODO prepei n bei diaforetiko logic gia kathe eidous paixnidiou, uparxon ulopoihsh einia gia tn tupos swstis apantisis
-        //User found a correct answer
-        if (correctAnswer.equals(currentQuestion.getChoices().get(choice))) {
-            game.getCurrentPlayer().addPoints(1000);
-        }
 
-        if (!currentQuestionSet.isEmpty()) {
-            currentQuestion = currentQuestionSet.remove(0);
-            questionLabel.setText(currentQuestion.getQuestion());
 
-            ArrayList<String> questionChoices = currentQuestion.getChoices();
-
-            for (int i = 0; i < questionChoices.size(); i++) {
-                answer[i].setText(questionChoices.get(i));
+        if (gameType == GameType.CORRECT_ANSWER) {
+            //User found a correct answer
+            if (correctAnswer.equals(currentQuestion.getChoices().get(choice))) {
+                game.getCurrentPlayer().addPoints(1000);
             }
-            Player player = game.getCurrentPlayer();
-            playerNameLabel.setText("Current Player:" + player.getPlayerName() + ", Current Points: " + player.getPoints());
-        } else {
-            System.out.println("GAME FINISHED, total points gathered " + game.getCurrentPlayer().getPoints());
-            Player player = game.getCurrentPlayer();
-            JOptionPane.showMessageDialog(frame, "Player " + player.getPlayerName() + " has won " + player.getPoints() + " points");
-            //Na 3anapaei stn arxikh pou dialegei game
+
+            if (!currentQuestionSet.isEmpty()) {
+                currentQuestion = currentQuestionSet.remove(0);
+                questionLabel.setText(currentQuestion.getQuestion());
+
+                ArrayList<String> questionChoices = currentQuestion.getChoices();
+
+                for (int i = 0; i < questionChoices.size(); i++) {
+                    answer[i].setText(questionChoices.get(i));
+                }
+                Player player = game.getCurrentPlayer();
+                playerNameLabel.setText("Current Player:" + player.getPlayerName() + ", Current Points: " + player.getPoints());
+            } else {
+                System.out.println("GAME FINISHED, total points gathered " + game.getCurrentPlayer().getPoints());
+                Player player = game.getCurrentPlayer();
+                JOptionPane.showMessageDialog(frame, "Player " + player.getPlayerName() + " has won " + player.getPoints() + " points");
+                //Na 3anapaei stn arxikh pou dialegei game
+            }
         }
+
 
     }
 
-    private void initGame() {
+    private void init1PlayerGame() {
+
+        if (gameType == GameType.CORRECT_ANSWER) {
+            time_label.setVisible(false);
+        }
 
         String category = game.getRandomCategory();
         gameTypeLabel.setText(category);
@@ -498,15 +530,15 @@ public class GUI extends JFrame implements ActionListener {
         updateFrame("Add Players");
     }
 
-    private void selectGameType(){
-        if(playersToPlay == 1){
+    private void selectGameType() {
+        if (playersToPlay == 1) {
 
             gameType1Button.setText("Correct Answer");
             gameType2Button.setText("Stop Alarm");
             gameType3Button.setText("Betting");
 
 
-        }else{
+        } else {
             gameType1Button.setText("Quick Answer");
             gameType2Button.setText("Thermometro");
             gameType3Button.setVisible(false);
@@ -515,23 +547,26 @@ public class GUI extends JFrame implements ActionListener {
         gameTypeFrame.setVisible(true);
     }
 
-    public void updateFrame(String whichFrame){
-        if(whichFrame.equals("Add Players")){
-            remove(newGameButton);remove(highScoreButton);remove(quitButton);remove(backgroundImage);
+    public void updateFrame(String whichFrame) {
+        if (whichFrame.equals("Add Players")) {
+            remove(newGameButton);
+            remove(highScoreButton);
+            remove(quitButton);
+            remove(backgroundImage);
             add(numOfPlayersLabel);
 
             //add(topPanel, BorderLayout.PAGE_START);
             //add(gridPanel);
             //topPanel.add(numOfPlayersLabel);
-            for(int i = 0; i<maxNumOfPlayers; i++){
+            for (int i = 0; i < maxNumOfPlayers; i++) {
                 add(playerButton[i]);
             }
             add(backgroundImage1);
             revalidate();
         }
-        if(whichFrame.equals("Add Names")){
+        if (whichFrame.equals("Add Names")) {
             numOfPlayersLabel.setText("Choose Nickname");
-            for(int i =0; i<maxNumOfPlayers; i++){
+            for (int i = 0; i < maxNumOfPlayers; i++) {
                 remove(playerButton[i]);
             }
             remove(backgroundImage1);
@@ -555,13 +590,9 @@ public class GUI extends JFrame implements ActionListener {
 
         } else {
             setVisible(false);
-           // frame.setVisible(true);
-
-
+            // frame.setVisible(true);
             selectGameType();
 
-
-          //  initGame();
 
         }
     }
