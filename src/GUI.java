@@ -1,10 +1,7 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -14,10 +11,12 @@ import java.util.concurrent.TimeUnit;
 public class GUI extends JFrame implements ActionListener {
     //newGame game;
     final private int maxNumOfPlayers = 2;
+    private  int nextPlayer = 0;
     private int playersToPlay;
     private ArrayList<Question> currentQuestionSet;
     private Question currentQuestion;
     private final ArrayList<Round> rounds;
+    private final ArrayList<Player> players;
 
     private Game game;
 
@@ -41,6 +40,8 @@ public class GUI extends JFrame implements ActionListener {
 
     public GUI(Game game) throws IOException {
         this.game = game;
+
+        players = new ArrayList<Player>();
 
         initComponents();
         initListeners();
@@ -158,8 +159,8 @@ public class GUI extends JFrame implements ActionListener {
             y += 100;
         }
 
-        nameLabel.setBounds(0, 120, 650, 100);
-        nameLabel.setForeground(new Color(155, 25, 11));
+        nameLabel.setBounds(0, 50, 650, 100);
+        nameLabel.setForeground(new Color(11, 85, 155));
         nameLabel.setFont(new Font("ARIAL", Font.BOLD, 25));
         nameLabel.setHorizontalAlignment(JTextField.CENTER);
 
@@ -170,7 +171,7 @@ public class GUI extends JFrame implements ActionListener {
         playerName.setFont(new Font("ARIAL", Font.BOLD, 30));
         playerName.setHorizontalAlignment(JTextField.CENTER);
         playerName.setBorder(BorderFactory.createBevelBorder(1));
-        playerName.setText("Adam");
+        playerName.setText("");
         playerName.setEditable(true);
         playerName.addFocusListener(new FocusListener() {
             @Override
@@ -218,26 +219,34 @@ public class GUI extends JFrame implements ActionListener {
 
         button1.setBounds(0, 100, 100, 80);
         button1.setFont(new Font("MV Boli", Font.BOLD, 35));
+        button1.setMnemonic(KeyEvent.VK_Q);
+        button1.setMnemonic(KeyEvent.VK_U);
         button1.setFocusable(false);
         button1.addActionListener(this);
         button1.setText("1");
 
         button2.setBounds(0, 200, 100, 80);
         button2.setFont(new Font("MV Boli", Font.BOLD, 35));
+        button2.setMnemonic(KeyEvent.VK_W);
+        button2.setMnemonic(KeyEvent.VK_I);
         button2.setFocusable(false);
         button2.addActionListener(this);
         button2.setText("2");
 
         button3.setBounds(0, 300, 100, 80);
         button3.setFont(new Font("MV Boli", Font.BOLD, 35));
+        button3.setMnemonic(KeyEvent.VK_E);
+        button3.setMnemonic(KeyEvent.VK_O);
         button3.setFocusable(false);
         button3.addActionListener(this);
         button3.setText("3");
 
         button4.setBounds(0, 400, 100, 80);
         button4.setFont(new Font("MV Boli", Font.BOLD, 35));
+        button4.setMnemonic(KeyEvent.VK_R);
+        button4.setMnemonic(KeyEvent.VK_P);
         button4.setFocusable(false);
-        button4.addActionListener(this);
+        // button4.addActionListener(this);
         button4.setText("4");
 
         playerNameLabel.setBounds(0, 500, 400, 25);
@@ -246,7 +255,7 @@ public class GUI extends JFrame implements ActionListener {
 
         time_label.setBounds(0, 500, 100, 25);
         time_label.setBackground(new Color(50, 50, 50));
-        time_label.setForeground(new Color(255, 0, 0));
+        time_label.setForeground(new Color(155, 85, 85));
         time_label.setFont(new Font("MV Boli", Font.PLAIN, 16));
         time_label.setHorizontalAlignment(JTextField.CENTER);
         time_label.setText("timer 00:00");
@@ -322,16 +331,12 @@ public class GUI extends JFrame implements ActionListener {
         doneButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String text = playerName.getText();
-                String playerName = text;
-                System.out.println(playerName);
-
-                game.addPlayer(playerName);
-
-                setVisible(false);
-                frame.setVisible(true);
-
-                initGame();
+                String name = playerName.getText();
+                game.addPlayer(name);
+                System.out.println(name);
+                playerName.setText("");
+                nextPlayer++;
+                playerToName(nextPlayer+1);
             }
         });
 
@@ -463,23 +468,17 @@ public class GUI extends JFrame implements ActionListener {
     //playerToName takes a number depending on which player's turn it is to give name
 
     public void playerToName(int nextPlayer) {
-        if (nextPlayer <= 2) {
+        if (nextPlayer <= playersToPlay) {
             nameLabel.setText("Player " + nextPlayer + " enter your nickname");
-            doneButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    String name = playerName.getText();
-                    playerToName(nextPlayer+1);
-                    //playerName.setText("Bella");
+            nameLabel.setForeground(Color.RED);
 
-                }
-            });
-
-
-        }else{
+        } else {
+            setVisible(false);
             frame.setVisible(true);
-        }
 
+            initGame();
+
+        }
     }
 
 
@@ -499,16 +498,6 @@ public class GUI extends JFrame implements ActionListener {
     }
 
     public void addPlayers(int playerCount) {
-        for (int i = 0; i < playerCount; i++) {
-            playerPanel.remove(playerButton[i]);
-        }
-
-        int counter = 1;
-        playerName.setText("Player " + counter + " enter Nickname : ");
-        playerPanel.add(playerName);
-        playerPanel.add(doneButton);
-        doneButton.setVisible(true);
-        revalidate();
     }
 
 
