@@ -32,7 +32,7 @@ public class GUI extends JFrame implements ActionListener {
     private JButton button5, button6, button7, button8;
     private JButton newGameButton, highScoreButton, quitButton;
     private JButton doneButton, betButton;
-    private JButton gameType1Button, gameType2Button, gameType3Button;
+    private JButton gameType1Button, gameType2Button, gameType3Button, gameType4Button, gameType5Button;
     private JButton[] playerButton;
 
     private JTextField gameTypeLabel, playerName, betTypeLabel;
@@ -153,6 +153,8 @@ public class GUI extends JFrame implements ActionListener {
             int x = i + 1;
             playerButton[i].setBounds(180, 100 + y, 250, 75);
             playerButton[i].setFont(new Font("Arial", Font.BOLD, 25));
+            playerButton[i].setBackground(new Color(60,60,160));
+            playerButton[i].setForeground(new Color(255,255,255));
             playerButton[i].setFocusable(false);
             y += 100;
         }
@@ -390,7 +392,7 @@ public class GUI extends JFrame implements ActionListener {
 
         gameTypeFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         gameTypeFrame.setSize(650, 650);
-        gameTypeFrame.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        gameTypeFrame.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 10));
         gameTypeFrame.setBackground(Color.WHITE);
         gameTypeFrame.setLocationRelativeTo(null);
 
@@ -398,25 +400,37 @@ public class GUI extends JFrame implements ActionListener {
         gameType1Button = new JButton();
         gameType2Button = new JButton();
         gameType3Button = new JButton();
+        gameType4Button = new JButton();
+        gameType5Button = new JButton();
 
-        gameType1Button.setPreferredSize(new Dimension(150, 80));
-        gameType1Button.setFont(new Font("MV Boli", Font.BOLD, 15));
+        gameType1Button.setPreferredSize(new Dimension(130, 50));
+        gameType1Button.setFont(new Font("Arial", Font.BOLD, 12));
         gameType1Button.setFocusable(false);
 
 
-        gameType2Button.setPreferredSize(new Dimension(150, 80));
-        gameType2Button.setFont(new Font("MV Boli", Font.BOLD, 15));
+        gameType2Button.setPreferredSize(new Dimension(130, 50));
+        gameType2Button.setFont(new Font("Arial", Font.BOLD, 12));
         gameType2Button.setFocusable(false);
 
-        gameType3Button.setPreferredSize(new Dimension(150, 80));
-        gameType3Button.setFont(new Font("MV Boli", Font.BOLD, 15));
+        gameType3Button.setPreferredSize(new Dimension(130, 50));
+        gameType3Button.setFont(new Font("Arial", Font.BOLD, 12));
         gameType3Button.setFocusable(false);
+
+        gameType4Button.setPreferredSize(new Dimension(130, 50));
+        gameType4Button.setFont(new Font("Arial", Font.BOLD, 12));
+        gameType4Button.setFocusable(false);
+
+        gameType5Button.setPreferredSize(new Dimension(130, 50));
+        gameType5Button.setFont(new Font("Arial", Font.BOLD, 12));
+        gameType5Button.setFocusable(false);
 
         gameTypeFrame.add(backgroundImage);
 
         gameTypeFrame.add(gameType1Button);
         gameTypeFrame.add(gameType2Button);
         gameTypeFrame.add(gameType3Button);
+        gameTypeFrame.add(gameType4Button);
+        gameTypeFrame.add(gameType5Button);
 
     }
 
@@ -872,12 +886,17 @@ public class GUI extends JFrame implements ActionListener {
             gameType1Button.setText("Correct Answer");
             gameType2Button.setText("Stop Alarm");
             gameType3Button.setText("Betting");
+            gameType4Button.setText("Fastest Answer");
+            gameType5Button.setText("Thermometer");
+
 
 
         } else {
             gameType1Button.setText("Quick Answer");
             gameType2Button.setText("Thermometro");
             gameType3Button.setVisible(false);
+            gameType4Button.setVisible(false);
+            gameType5Button.setVisible(false);
         }
 
         gameTypeFrame.setVisible(true);
@@ -909,8 +928,10 @@ public class GUI extends JFrame implements ActionListener {
 
             add(nameLabel);
             add(playerName);
+            numOfPlayersLabel.setVisible(true);
             doneButton.setVisible(true);
             add(backgroundImage2);
+            repaint();
             revalidate();
 
         }
@@ -956,39 +977,4 @@ public class GUI extends JFrame implements ActionListener {
 }
 
 
-        /*
-            private JLabel answer2;
-            private JLabel answer3;
-            private JLabel answer4,answer5;
-        answer1.setBounds(125,100,500,100);
-        answer1.setBackground(new Color(50,50,50));
-        answer1.setForeground(new Color(55,55,55));
-        answer1.setFont(new Font("MV Boli",Font.PLAIN,35));
-        answer1.setText("Test 1");
-
-        answer2.setBounds(125,200,500,100);
-        answer2.setBackground(new Color(50,50,50));
-        answer2.setForeground(new Color(55,55,55));
-        answer2.setFont(new Font("MV Boli",Font.PLAIN,35));
-        answer2.setText("Test 2");
-
-        answer3.setBounds(125,300,500,100);
-        answer3.setBackground(new Color(50,50,50));
-        answer3.setForeground(new Color(55,55,55));
-        answer3.setFont(new Font("MV Boli",Font.PLAIN,35));
-        answer3.setText("Test 3");
-
-        answer4.setBounds(125,400,500,100);
-        answer4.setBackground(new Color(50,50,50));
-        answer4.setForeground(new Color(55,55,55));
-        answer4.setFont(new Font("MV Boli",Font.PLAIN,35));
-        answer4.setText("Test 4");
-
-        frame.add(answer1);
-        frame.add(answer2);
-        frame.add(answer3);
-        frame.add(answer4);
-        frame.add(answer5);
-
-         */
 
