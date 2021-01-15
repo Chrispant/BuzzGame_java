@@ -40,8 +40,9 @@ public class GUI extends JFrame implements ActionListener {
     private JTextArea questionLabel;
     private JLabel[] answer;
     private JLabel time_label;
+    private JLabel playerTagLeft, playerTagRight;
 
-    private JLabel playerNameLabel, numOfPlayersLabel, nameLabel;
+    private JLabel playerNameLabel, player2NameLabel, numOfPlayersLabel, nameLabel;
 
     private JFrame frame, gameTypeFrame, frame2;
 
@@ -298,8 +299,8 @@ public class GUI extends JFrame implements ActionListener {
         for (int i = 0; i < 4; i++) {
             answer[i].setBounds(125, 100 + x, 500, 100);
             answer[i].setBackground(new Color(50, 50, 50));
-            answer[i].setForeground(new Color(55, 55, 55));
-            answer[i].setFont(new Font("MV Boli", Font.PLAIN, 20));
+            answer[i].setForeground(new Color(255, 0, 50));
+            answer[i].setFont(new Font("ARIAL", Font.BOLD, 20));
             answer[i].setText("Test");
             x += 100;
             frame.add(answer[i]);
@@ -321,62 +322,69 @@ public class GUI extends JFrame implements ActionListener {
 
 
     private void twoPlayersFrame(){
-        frame2 = new JFrame();
-
-        frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame2.setSize(650, 650);
-        frame2.setLayout(new BorderLayout());
-        frame2.setBackground(Color.WHITE);
 
         button5 = new JButton();
         button6 = new JButton();
         button7 = new JButton();
         button8 = new JButton();
 
+        player2NameLabel = new JLabel();
+
+        playerTagLeft = new JLabel();
+        playerTagRight = new JLabel();
+
+
+        playerTagLeft.setBounds(0, 470, 45, 50);
+        playerTagLeft.setFont(new Font("Arial", Font.ITALIC, 10));
+        playerTagLeft.setText("Player 1");
+        playerTagRight.setBounds(50, 470, 45, 50);
+        playerTagRight.setFont(new Font("Arial", Font.ITALIC, 10));
+        playerTagRight.setText("Player 2");
+
+
+        player2NameLabel.setBounds(0, 550, 400, 25);
+        player2NameLabel.setFont(new Font("MV Boli", Font.BOLD, 15));
+
         button5.setBounds(50, 100, 45, 80);
         button5.setFont(new Font("MV Boli", Font.BOLD, 15));
         button5.setMnemonic(KeyEvent.VK_U);
         button5.setFocusable(false);
-        button5.addActionListener(this);
         button5.setText("U");
 
         button6.setBounds(50, 200, 45, 80);
         button6.setFont(new Font("MV Boli", Font.BOLD, 15));
         button6.setMnemonic(KeyEvent.VK_I);
         button6.setFocusable(false);
-        button6.addActionListener(this);
         button6.setText("I");
 
         button7.setBounds(50, 300, 45, 80);
         button7.setFont(new Font("MV Boli", Font.BOLD, 15));
         button7.setMnemonic(KeyEvent.VK_O);
         button7.setFocusable(false);
-        button7.addActionListener(this);
         button7.setText("O");
 
         button8.setBounds(50, 400, 45, 80);
         button8.setFont(new Font("MV Boli", Font.BOLD, 15));
         button8.setMnemonic(KeyEvent.VK_P);
         button8.setFocusable(false);
-        // button4.addActionListener(this);
         button8.setText("P");
-        frame2.add(gameTypeLabel);
-        frame2.add(questionLabel);
-        frame2.add(button1);
-        frame2.add(button2);
-        frame2.add(button3);
-        frame2.add(button4);
-        frame2.add(button5);
-        frame2.add(button6);
-        frame2.add(button7);
-        frame2.add(button8);
 
-        frame2.add(playerNameLabel);
-        frame2.add(time_label);
+        frame.add(button5);
+        frame.add(button6);
+        frame.add(button7);
+        frame.add(button8);
+        frame.add(player2NameLabel);
+        frame.add(playerTagLeft);
+        frame.add(playerTagRight);
+        frame.add(backgroundImage2);
+        playerNameLabel.setVisible(true);
+        player2NameLabel.setVisible(true);
+        backgroundImage2.setVisible(false);
+        betButton.setVisible(false);
+        time_label.setVisible(false);
+        betTypeLabel.setVisible(false);
+        frame.setVisible(true);
 
-        frame2.add(betTypeLabel,BorderLayout.PAGE_START);
-        frame2.add(betButton,BorderLayout.PAGE_END);
-       // frame2.setVisible(true);
 
 
     }
@@ -775,12 +783,15 @@ public class GUI extends JFrame implements ActionListener {
 
                     long seconds = duration.toSeconds();
                     milliseconds = duration.toMillis();
-                    if (milliseconds == 5000) {
+                    if (milliseconds == 5010) {
                         JOptionPane.showMessageDialog(frame, "End of time 0 points gained even if you answer correct...");
                         endOfTime = true;
+                        time_label.setText("Time's up!");
+                        return;
                     }
-
-                    time_label.setText("Time: " + seconds + "");
+                    if(!endOfTime) {
+                        time_label.setText("Time: " + seconds + "");
+                    }
                 }
             });
 
@@ -868,6 +879,7 @@ public class GUI extends JFrame implements ActionListener {
         } else {
             gameType1Button.setText("Quick Answer");
             gameType2Button.setText("Thermometro");
+            twoPlayersFrame();
             gameType3Button.setVisible(false);
         }
 
@@ -917,6 +929,7 @@ public class GUI extends JFrame implements ActionListener {
         if (nextPlayer <= playersToPlay) {
             nameLabel.setText("Player " + nextPlayer + " enter your nickname");
             nameLabel.setForeground(Color.RED);
+            nameLabel.setVisible(true);
 
         } else {
             setVisible(false);
