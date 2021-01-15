@@ -336,10 +336,10 @@ public class GUI extends JFrame implements ActionListener {
 
         playerTagLeft.setBounds(0, 470, 45, 50);
         playerTagLeft.setFont(new Font("Arial", Font.ITALIC, 10));
-        playerTagLeft.setText("Player 1");
+        playerTagLeft.setText("player 1");//players.get(0).getPlayerName());
         playerTagRight.setBounds(50, 470, 45, 50);
         playerTagRight.setFont(new Font("Arial", Font.ITALIC, 10));
-        playerTagRight.setText("Player 2");
+        playerTagRight.setText("player 2");//players.get(1).getPlayerName());
 
 
         player2NameLabel.setBounds(0, 550, 400, 25);
