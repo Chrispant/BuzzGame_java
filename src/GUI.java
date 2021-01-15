@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -32,7 +33,7 @@ public class GUI extends JFrame implements ActionListener {
     private JButton button5, button6, button7, button8;
     private JButton newGameButton, highScoreButton, quitButton;
     private JButton doneButton, betButton;
-    private JButton gameType1Button, gameType2Button, gameType3Button, gameType4Button, gameType5Button;
+    private JButton gameType1Button, gameType2Button, gameType3Button;
     private JButton[] playerButton;
 
     private JTextField gameTypeLabel, playerName, betTypeLabel;
@@ -262,29 +263,25 @@ public class GUI extends JFrame implements ActionListener {
         button1.setFont(new Font("MV Boli", Font.BOLD, 15));
         button1.setMnemonic(KeyEvent.VK_Q);
         button1.setFocusable(false);
-        button1.addActionListener(this);
-        button1.setText("Q");
+        button1.setText("1");
 
         button2.setBounds(0, 200, 45, 80);
         button2.setFont(new Font("MV Boli", Font.BOLD, 12));
         button2.setMnemonic(KeyEvent.VK_W);
         button2.setFocusable(false);
-        button2.addActionListener(this);
-        button2.setText("W");
+        button2.setText("2");
 
         button3.setBounds(0, 300, 45, 80);
         button3.setFont(new Font("MV Boli", Font.BOLD, 15));
         button3.setMnemonic(KeyEvent.VK_E);
         button3.setFocusable(false);
-        button3.addActionListener(this);
-        button3.setText("E");
+        button3.setText("3");
 
         button4.setBounds(0, 400, 45, 80);
         button4.setFont(new Font("MV Boli", Font.BOLD, 15));
         button4.setMnemonic(KeyEvent.VK_R);
         button4.setFocusable(false);
-        // button4.addActionListener(this);
-        button4.setText("R");
+        button4.setText("4");
 
         playerNameLabel.setBounds(0, 500, 400, 25);
         playerNameLabel.setFont(new Font("MV Boli", Font.BOLD, 15));
@@ -400,8 +397,6 @@ public class GUI extends JFrame implements ActionListener {
         gameType1Button = new JButton();
         gameType2Button = new JButton();
         gameType3Button = new JButton();
-        gameType4Button = new JButton();
-        gameType5Button = new JButton();
 
         gameType1Button.setPreferredSize(new Dimension(130, 50));
         gameType1Button.setFont(new Font("Arial", Font.BOLD, 12));
@@ -416,21 +411,13 @@ public class GUI extends JFrame implements ActionListener {
         gameType3Button.setFont(new Font("Arial", Font.BOLD, 12));
         gameType3Button.setFocusable(false);
 
-        gameType4Button.setPreferredSize(new Dimension(130, 50));
-        gameType4Button.setFont(new Font("Arial", Font.BOLD, 12));
-        gameType4Button.setFocusable(false);
-
-        gameType5Button.setPreferredSize(new Dimension(130, 50));
-        gameType5Button.setFont(new Font("Arial", Font.BOLD, 12));
-        gameType5Button.setFocusable(false);
 
         gameTypeFrame.add(backgroundImage);
 
         gameTypeFrame.add(gameType1Button);
         gameTypeFrame.add(gameType2Button);
         gameTypeFrame.add(gameType3Button);
-        gameTypeFrame.add(gameType4Button);
-        gameTypeFrame.add(gameType5Button);
+
 
     }
 
@@ -522,34 +509,6 @@ public class GUI extends JFrame implements ActionListener {
             }
         });
 
-
-//        button5.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                playerAnswers(0);
-//            }
-//        });
-
-//        button6.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                playerAnswers(1);
-//            }
-//        });
-//
-//        button7.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                playerAnswers(2);
-//            }
-//        });
-//
-//        button8.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                playerAnswers(3);
-//            }
-//        });
 
 
         gameType1Button.addActionListener(new ActionListener() {
@@ -666,10 +625,7 @@ public class GUI extends JFrame implements ActionListener {
                 Player player = game.getCurrentPlayer();
                 playerNameLabel.setText("Current Player:" + player.getPlayerName() + ", Current Points: " + player.getPoints());
             } else {
-                System.out.println("GAME FINISHED, total points gathered " + game.getCurrentPlayer().getPoints());
-                Player player = game.getCurrentPlayer();
-                JOptionPane.showMessageDialog(frame, "Player " + player.getPlayerName() + " has won " + player.getPoints() + " points");
-                //Na 3anapaei stn arxikh pou dialegei game
+                player1gameOver();
             }
         } else if (gameType == GameType.BETTING) {
             if (correctAnswer.equals(currentQuestion.getChoices().get(choice))) {
@@ -700,10 +656,7 @@ public class GUI extends JFrame implements ActionListener {
 
 
             } else {
-                System.out.println("GAME FINISHED, total points gathered " + game.getCurrentPlayer().getPoints());
-                Player player = game.getCurrentPlayer();
-                JOptionPane.showMessageDialog(frame, "Player " + player.getPlayerName() + " has won " + player.getPoints() + " points");
-                //Na 3anapaei stn arxikh pou dialegei game
+                player1gameOver();
             }
 
 
@@ -762,10 +715,7 @@ public class GUI extends JFrame implements ActionListener {
                 timer.start();
 
             } else {
-                System.out.println("GAME FINISHED, total points gathered " + game.getCurrentPlayer().getPoints());
-                Player player = game.getCurrentPlayer();
-                JOptionPane.showMessageDialog(frame, "Player " + player.getPlayerName() + " has won " + player.getPoints() + " points");
-                //Na 3anapaei stn arxikh pou dialegei game
+                player1gameOver();
             }
 
 
@@ -842,12 +792,6 @@ public class GUI extends JFrame implements ActionListener {
 
     }
 
-    protected String format(Duration duration) {
-        long hours = duration.toHours();
-        long mins = duration.minusHours(hours).toMinutes();
-        long seconds = duration.minusMinutes(mins).toMillis() / 1000;
-        return String.format("%02dh %02dm %02ds", hours, mins, seconds);
-    }
 
     private void start1PlayerGame() {
 
@@ -870,6 +814,37 @@ public class GUI extends JFrame implements ActionListener {
         playerNameLabel.setText("Current Player:" + player.getPlayerName() + ", Current Points: " + player.getPoints());
     }
 
+    private void player1gameOver()  {
+        System.out.println("GAME FINISHED, total points gathered " + game.getCurrentPlayer().getPoints());
+        Player player = game.getCurrentPlayer();
+        JOptionPane.showMessageDialog(frame, "Player " + player.getPlayerName() + " has won " + player.getPoints() + " points");
+
+
+        try {
+            File myObj = new File("score.txt");
+            if (myObj.createNewFile()) {
+                System.out.println("File created: " + myObj.getName());
+            } else {
+                System.out.println("File already exists.");
+            }
+
+            String str = "GAME FINISHED, total points gathered for player: " + game.getCurrentPlayer().getPlayerName() + " ,points: " + game.getCurrentPlayer().getPoints();
+            FileOutputStream outputStream = new FileOutputStream(myObj);
+            byte[] strToBytes = str.getBytes();
+            outputStream.write(strToBytes);
+
+            outputStream.close();
+
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+
+
+    }
+
+
+
 
     public void start() {
         setVisible(true);
@@ -886,8 +861,7 @@ public class GUI extends JFrame implements ActionListener {
             gameType1Button.setText("Correct Answer");
             gameType2Button.setText("Stop Alarm");
             gameType3Button.setText("Betting");
-            gameType4Button.setText("Fastest Answer");
-            gameType5Button.setText("Thermometer");
+
 
 
 
@@ -895,8 +869,6 @@ public class GUI extends JFrame implements ActionListener {
             gameType1Button.setText("Quick Answer");
             gameType2Button.setText("Thermometro");
             gameType3Button.setVisible(false);
-            gameType4Button.setVisible(false);
-            gameType5Button.setVisible(false);
         }
 
         gameTypeFrame.setVisible(true);
@@ -923,6 +895,7 @@ public class GUI extends JFrame implements ActionListener {
             numOfPlayersLabel.setText("Choose Nickname");
             for (int i = 0; i < maxNumOfPlayers; i++) {
                 remove(playerButton[i]);
+                //playerButton[i].setVisible(false);
             }
             remove(backgroundImage1);
 
