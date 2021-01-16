@@ -202,8 +202,9 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 gameType = "Answer Correct";
+                updateFrame("Update Question");
                 frame.setVisible(true);
-                remove(gameType1Button);
+                gameType1Button.setVisible(false);
             }
         });
 
@@ -216,11 +217,12 @@ public class GUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 gameType = "Bet";
+                updateFrame("Update Question");
                 initBetFrame();
                 playerToBet(1);
                 betFrame.setVisible(true);
                 setVisible(false);
-                remove(gameType2Button);
+                gameType2Button.setVisible(false);
 
             }
         });
@@ -275,15 +277,15 @@ public class GUI extends JFrame {
                 betFrame.setVisible(false);
                 if(players.size()== 1){
                     players.get(0).setBet(250);
-                    updateFrame("Update Question");
+                    //updateFrame("Update Question");
                     frame.setVisible(true);
                 }else if(players.size() == 2 && !playersHaveBet){
+                    players.get(0).setBet(250);
                     playerToBet(2);
-                    updateFrame("Second Bet");
                 }else{
                     players.get(1).setBet(250);
                     playersHaveBet = false;
-                    updateFrame("Update Question");
+                    //updateFrame("Update Question");
                     frame.setVisible(true);
                 }
 
@@ -297,6 +299,20 @@ public class GUI extends JFrame {
         button500.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                betFrame.setVisible(false);
+                if(players.size()== 1){
+                    players.get(0).setBet(500);
+                    //updateFrame("Update Question");
+                    frame.setVisible(true);
+                }else if(players.size() == 2 && !playersHaveBet){
+                    players.get(0).setBet(500);
+                    playerToBet(2);
+                }else{
+                    players.get(1).setBet(500);
+                    playersHaveBet = false;
+                    //updateFrame("Update Question");
+                    frame.setVisible(true);
+                }
 
             }
         });
@@ -308,6 +324,22 @@ public class GUI extends JFrame {
         button750.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                betFrame.setVisible(false);
+                if(players.size()== 1){
+                    players.get(0).setBet(750);
+                    //updateFrame("Update Question");
+                    frame.setVisible(true);
+                }else if(players.size() == 2 && !playersHaveBet){
+                    players.get(0).setBet(750);
+                    playerToBet(2);
+                }else{
+                    players.get(1).setBet(750);
+                    playersHaveBet = false;
+                    //updateFrame("Update Question");
+                    frame.setVisible(true);
+                }
+
+
 
             }
         });
@@ -319,6 +351,22 @@ public class GUI extends JFrame {
         button1000.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                betFrame.setVisible(false);
+                if(players.size()== 1){
+                    players.get(0).setBet(1000);
+                    //updateFrame("Update Question");
+                    frame.setVisible(true);
+                }else if(players.size() == 2 && !playersHaveBet){
+                    players.get(0).setBet(1000);
+                    playerToBet(2);
+                }else{
+                    players.get(1).setBet(1000);
+                    playersHaveBet = false;
+                    //updateFrame("Update Question");
+                    frame.setVisible(true);
+                }
+
+
 
             }
         });
@@ -348,7 +396,7 @@ public class GUI extends JFrame {
         button2 = new JButton();
         button3 = new JButton();
         button4 = new JButton();
-        playerTagLeft = new JLabel();
+
         answer = new JLabel[4];
 
         for(int i = 0; i<4; i++){
@@ -356,8 +404,8 @@ public class GUI extends JFrame {
         }
 
         time_label = new JLabel();
+        playerTagLeft = new JLabel();
 
-        //Gui image components
 
 
         //Quiz frame parameters
@@ -507,9 +555,7 @@ public class GUI extends JFrame {
 
 
 
-        playerTagRight.setBounds(50, 470, 45, 50);
-        playerTagRight.setFont(new Font("Arial", Font.ITALIC, 10));
-        playerTagRight.setText(players.get(1).getPlayerName());//players.get(1).getPlayerName());
+//players.get(1).getPlayerName());
 
 
         //player2NameLabel.setBounds(0, 550, 400, 25);
@@ -605,9 +651,6 @@ public class GUI extends JFrame {
         //betButton.setVisible(false);
         time_label.setVisible(false);
         //betTypeLabel.setVisible(false);
-        updateFrame("Update Question");
-
-
 
 
     }
@@ -656,7 +699,12 @@ public class GUI extends JFrame {
     }
 
     public void showPoints(){
-        System.out.println(players.get(0).getPoints()+"\n"+roundIs);
+        playerTagLeft.setText("Player : "+players.get(0).getPlayerName()+", Points : "+ players.get(0).getPoints());
+        if(players.size() == 2){
+            playerTagRight.setText("Player : "+players.get(1).getPlayerName()+", Points : "+ players.get(1).getPoints());
+        }
+
+
     }
 
 
@@ -668,6 +716,7 @@ public class GUI extends JFrame {
             }
 
             if(players.size() == 2 && playersHaveAnswered()==true){
+                showPoints();
                 roundIs++;
                 updateFrame("Update Question");
                 enableButtons(1);enableButtons(2);
@@ -686,9 +735,12 @@ public class GUI extends JFrame {
             }
 
             if(players.size() == 2 && playersHaveAnswered()==true){
+                showPoints();
                 roundIs++;
                 frame.setVisible(false);
+                playerToBet(1);
                 betFrame.setVisible(true);
+                updateFrame("Update Question");
                 enableButtons(1);enableButtons(2);
             }
 
@@ -696,7 +748,7 @@ public class GUI extends JFrame {
                 roundIs++;
                 frame.setVisible(false);
                 betFrame.setVisible(true);
-                //updateFrame("Update Question");
+                updateFrame("Update Question");
                 enableButtons(1);
             }
         }
@@ -778,22 +830,23 @@ public class GUI extends JFrame {
                     for (int i = 0; i < 4; i++) {
                         answer[i].setText(game.currentQuestion().getChoices().get(i));
                     }
-                    showPoints();
+                    gameTypeLabel.setText(game.getCategory());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }else{
                 roundIs=1;
                 frame.setVisible(false);
+                if(gameType == "Bet"){
+                    betFrame.setVisible(false);
+                }
+
                 setVisible(true);
 
             }
 
         }
-        if(whichFrame.equals("Second Bet")){
-            betFrame.setVisible(true);
-            playersHaveBet = true;
-        }
+
         revalidate();
 
     }
@@ -833,21 +886,21 @@ public class GUI extends JFrame {
         if (nextPlayer <= playersToPlay) {
             nameLabel.setText("Player " + nextPlayer + " enter your nickname");
             nameLabel.setForeground(Color.RED);
-
         } else {
             if(playersToPlay == 1){
-                playerTagLeft.setBounds(0, 470, 45, 50);
-                playerTagLeft.setFont(new Font("Arial", Font.ITALIC, 10));
-                playerTagLeft.setText(players.get(0).getPlayerName());//players.get(0).getPlayerName());
-                updateFrame("Update Question");
+                playerTagLeft.setBounds(50, 440, 100, 50);
                 //frame.setVisible(true);
-                selectGameType();
 
             }else{
                 twoPlayersFrame();
-                selectGameType();
+                playerTagRight.setBounds(0, 500, 400, 50);
+                playerTagRight.setFont(new Font("Arial", Font.ITALIC, 12));
+                playerTagRight.setText(players.get(1).getPlayerName());
             }
-
+            playerTagLeft.setBounds(0, 600, 400, 50);
+            playerTagLeft.setFont(new Font("Arial", Font.ITALIC, 12));
+            playerTagLeft.setText(players.get(0).getPlayerName());
+            selectGameType();
 
 
         }
@@ -856,6 +909,10 @@ public class GUI extends JFrame {
     public void playerToBet(int nextPlayer){
         if(nextPlayer <= playersToPlay){
             numOfPlayersLabel.setText(players.get(nextPlayer-1).getPlayerName()+"'s bet");
+            betFrame.setVisible(true);
+            if(nextPlayer == playersToPlay){
+                playersHaveBet = true;
+            }
         }
     }
 

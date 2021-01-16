@@ -16,7 +16,7 @@ public class Game {
     private final HashMap<String, ArrayList<Question>> questionsPerCategory;
     private final ArrayList<Player> players;
     private final ArrayList<Round> rounds;
-
+    private String category;
 
     /**
      * Constructor of class game. It initialises all properties of this class. It creates hard-coded questions with the corresponding answers. After it creates the questions, a new set of Questions objects
@@ -57,57 +57,57 @@ public class Game {
         String question3 = "Is blue red?";
         String[] choices3 = {"I will not dignify that with a response", "are you stupid?", "what?", "no"};
         questionSet.add(new Question(question3, "I will not dignify that with a response", choices3));
-        String question3b = "is red blue?";
-        String[] choices3b = {"I will not dignify that with a response", "Maybe, if you are colorblind", "you know the answer", "no"};
-        questionSet.add(new Question(question3b, "no", choices3b));
+        String question3b = "When did the noon landing happened";
+        String[] choices3b = {"1969", "never happened", "1696", "1996"};
+        questionSet.add(new Question(question3b, "never happened", choices3b));
         String question4 = "How many miles does a cow run when it is being chased?";
         String[] choices4 = {"2 miles", "Cows don't run", "Depends on the weather", "~0.005"};
         questionSet2.add(new Question(question4, "~0.005", choices4));
         String question5 = "How many apples in a cookie jar?";
         String[] choices5 = {"5 cookies", "who puts apples in a cookie jar?", "0", "As many as possible"};
         questionSet2.add(new Question(question5, "0", choices5));
-        String question6 = "How does the sun look like in the morning?";
-        String[] choices6 = {"Like it does in the evening", "It uses glasses", "This game is stupid", "the first time you answer something you will be wrong"};
-        questionSet2.add(new Question(question6, "the first time you answer something you will be wrong", choices6));
-        String question7 = "How does the sun look like in the evening?";
-        String[] choices7 = {"Like a boss", "5x+24", "Depends on where you are at", "Clearly this is not a question you ask in a quiz game"};
-        questionSet2.add(new Question(question7, "5x+24", choices7));
-        String question11 = "A = ?";
-        String[] choices11 = {"A", "B", "C", "D"};
-        questionSet3.add(new Question(question11, "A", choices11));
-        String question22 = "What threat is trendy these days?";
-        String[] choices22 = {"COVID-19", "DNA-damaging vaccines", "5G", "Kanye West"};
-        questionSet3.add(new Question(question22, "COVID-19", choices22));
-        String question33 = "Is blue red?";
-        String[] choices33 = {"I will not dignify that with a response", "are you stupid?", "what?", "no"};
-        questionSet3.add(new Question(question33, "I will not dignify that with a response", choices33));
-        String question44 = "is red blue?";
-        String[] choices44 = {"I will not dignify that with a response", "Maybe, if you are colorblind", "you know the answer", "no"};
-        questionSet3.add(new Question(question44, "no", choices44));
-        String question444 = "How many miles does a cow run when it is being chased?";
-        String[] choices444 = {"2 miles", "Cows don't run", "Depends on the weather", "~0.005"};
-        questionSet4.add(new Question(question444, "~0.005", choices444));
-        String question55 = "How many apples in a cookie jar?";
-        String[] choices55 = {"5 cookies", "who puts apples in a cookie jar?", "0", "As many as possible"};
-        questionSet4.add(new Question(question55, "0", choices55));
-        String question66 = "How does the sun look like in the morning?";
-        String[] choices66 = {"Like it does in the evening", "It uses glasses", "This game is stupid", "the first time you answer something you will be wrong"};
-        questionSet4.add(new Question(question66, "the first time you answer something you will be wrong", choices66));
-        String question77 = "How does the sun look like in the evening?";
-        String[] choices77 = {"Like a boss", "5x+24", "Depends on where you are at", "Clearly this is not a question you ask in a quiz game"};
-        questionSet4.add(new Question(question77, "5x+24", choices77));
-        String question15 = "How many miles does a cow run when it is being chased?";
-        String[] choices15 = {"2 miles", "Cows don't run", "Depends on the weather", "~0.005"};
-        questionSet5.add(new Question(question15, "~0.005", choices15));
-        String question25 = "How many apples in a cookie jar?";
-        String[] choices25 = {"5 cookies", "who puts apples in a cookie jar?", "0", "As many as possible"};
-        questionSet5.add(new Question(question25, "0", choices25));
-        String question35 = "How does the sun look like in the morning?";
-        String[] choices35 = {"Like it does in the evening", "It uses glasses", "This game is stupid", "the first time you answer something you will be wrong"};
-        questionSet5.add(new Question(question35, "the first time you answer something you will be wrong", choices35));
-        String question45 = "How does the sun look like in the evening?";
-        String[] choices45 = {"Like a boss", "5x+24", "Depends on where you are at", "Clearly this is not a question you ask in a quiz game"};
-        questionSet5.add(new Question(question45, "5x+24", choices45));
+        String question6 = "What is the earth's gravity pull";
+        String[] choices6 = {"9.800 m/s²", "8.900 m/s²", "9.700 m/s²", "Don't google that"};
+        questionSet2.add(new Question(question6, "9.800 m/s", choices6));
+        String question7 = "Oranges are";
+        String[] choices7 = {"Orange", "Full of vitamin C", "Filled with juice", "Not an apple"};
+        questionSet2.add(new Question(question7, "Not an apple", choices7));
+        String question11 = "B = ?";
+        String[] choices11 = {"A", "B", "C", "B but better"};
+        questionSet3.add(new Question(question11, "B", choices11));
+        String question22 = "Which Jujitsu technique is the deadliest?";
+        String[] choices22 = {"Rear-naked choke", "Arm bar", "Kimura", "Leg-lock"};
+        questionSet3.add(new Question(question22, "Rear-naked choke", choices22));
+        String question33 = "Yellow card in football means?";
+        String[] choices33 = {"First offence", "Offside", "Goal", "Elimination"};
+        questionSet3.add(new Question(question33, "First offence", choices33));
+        String question44 = "1 = ?";
+        String[] choices44 = {"1", "2", "3", "4"};
+        questionSet3.add(new Question(question44, "1", choices44));
+        String question444 = "Can crystals heal better than modern science?";
+        String[] choices444 = {"Only on Mondays", "Yes", "Maybe", "Only they are blue"};
+        questionSet4.add(new Question(question444, "Only on Mondays", choices444));
+        String question55 = "Which organ is the smallest";
+        String[] choices55 = {"Your penis", "The kidney", "The eye", "The heart"};
+        questionSet4.add(new Question(question55, "Your penis", choices55));
+        String question66 = "Are sodas healthy??";
+        String[] choices66 = {"No", "Yes", "Only Coke", "Only sugarless sodas"};
+        questionSet4.add(new Question(question66, "No", choices66));
+        String question77 = "Should you drink blood?";
+        String[] choices77 = {"no", "no", "no","no"};
+        questionSet4.add(new Question(question77, "no", choices77));
+        String question15 = "Who does not have an oscar?";
+        String[] choices15 = {"Leonardo Dicaprio", "Meryl Strip", "Cristian Bale", "Johnny Depp"};
+        questionSet5.add(new Question(question15, "Johnny Depp", choices15));
+        String question25 = "Which movie is the longest?";
+        String[] choices25 = {"Interstellar", "Tenet", "Inception", "The Martian"};
+        questionSet5.add(new Question(question25, "Interstellar", choices25));
+        String question35 = "Who is John Wick in the film John Wick?";
+        String[] choices35 = {"The boogeyman", "The ghost", "The guy you send to kill the f*cking boogeyman", "A janitor"};
+        questionSet5.add(new Question(question35, "The guy you send to kill the f*cking boogeyman", choices35));
+        String question45 = "What is the name of the movie in which Terry Crews is the president ";
+        String[] choices45 = {"Idiocracy", "Eternal sunshine of the spotless mind","Big Man Time!","From zero to president"};
+        questionSet5.add(new Question(question45, "Idiocracy", choices45));
         Collections.shuffle(questionSet3);
         Collections.shuffle(questionSet4);
         Collections.shuffle(questionSet5);
@@ -122,8 +122,8 @@ public class Game {
         roundCategories.add("History");
         roundCategories.add("Science");
         roundCategories.add("Sports");
-        roundCategories.add("Cinema");
         roundCategories.add("Health");
+        roundCategories.add("Cinema");
         questionsPerCategory.put(roundCategories.get(0), questionSet);
         questionsPerCategory.put(roundCategories.get(1), questionSet2);
         questionsPerCategory.put(roundCategories.get(2), questionSet3);
@@ -244,18 +244,15 @@ public class Game {
 
     public void updateQuestion(){
         Question newQuestion  = null;
-        String category = getCategory();
+        String category = pickCategory();
 
-        if(questionsPerCategory.get(category).size() >=1){
-            newQuestion=questionsPerCategory.get(category).get(0);
-            questionsPerCategory.get(category).remove(0);
-        }else{
-            String newCategory = getDifferentCategory(category);
-            newQuestion = questionsPerCategory.get(newCategory).get(0);
-            questionsPerCategory.get(newCategory).remove(0);
+        if(!(questionsPerCategory.get(category).size() >=1)){
+            category = getDifferentCategory(category);
         }
+        newQuestion=questionsPerCategory.get(category).get(0);
+        questionsPerCategory.get(category).remove(0);
 
-
+        setCategory(category);
         currentQ = newQuestion;
     }
 
@@ -263,7 +260,16 @@ public class Game {
         return currentQ;
     }
 
+    public void setCategory(String category){
+        this.category = category;
+
+    }
+
     public String getCategory(){
+        return this.category;
+    }
+
+    public String pickCategory(){
         int zeroToFive = (int) Math.round(Math.random() * 5);
         String category = roundCategory(zeroToFive);
 
@@ -271,7 +277,7 @@ public class Game {
     }
 
     public String getDifferentCategory(String category){
-        String newCategory = getCategory();
+        String newCategory = pickCategory();
         if(newCategory == category || questionsPerCategory.get(newCategory).size()==0){
             newCategory = getDifferentCategory(newCategory);
         }
@@ -287,9 +293,9 @@ public class Game {
         } else if (category == 2){
             return "Sports";
         }else if (category == 3){
-            return "Cinema";
-        }else{
             return "Health";
+        }else{
+            return "Cinema";
         }
     }
 
