@@ -35,7 +35,7 @@ public class GUI extends JFrame {
     private JLabel time_label, numOfPlayersLabel, nameLabel;
     private JLabel playerTagLeft, playerTagRight;
 
-    private JFrame frame, betFrame;
+    private JFrame frame, betFrame, messageFrame;
 
     private JLabel backgroundImage,backgroundImage1,backgroundImage2;
 
@@ -49,6 +49,11 @@ public class GUI extends JFrame {
         initQandAComponents();
 
     }
+
+    /**
+     * initializes basic frame's components
+     * @throws IOException
+     */
     public void initBasicComponents() throws IOException {
         newGameButton = new JButton("New game");
         highScoreButton = new JButton("High Score");
@@ -234,7 +239,9 @@ public class GUI extends JFrame {
         gameType3Button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                gameType = "Stop The Clock";
+                updateFrame("Update Question");
+                time_label.setVisible(true);
             }
         });
 
@@ -253,7 +260,12 @@ public class GUI extends JFrame {
         gameType2Button.setVisible(false);
         gameType3Button.setVisible(false);
 
-    }public void initBetFrame(){
+    }
+
+    /**
+     * initializes frame for the bet type of game
+     */
+    public void initBetFrame(){
         betFrame = new JFrame();
         button250 = new JButton();
         button500 = new JButton();
@@ -384,7 +396,10 @@ public class GUI extends JFrame {
 
     }
 
-
+    /**
+     * initializes components for Q&A frame
+     * @throws IOException
+     */
     public void initQandAComponents() throws IOException {
         //GUI Quiz components
         frame = new JFrame();
@@ -405,6 +420,8 @@ public class GUI extends JFrame {
 
         time_label = new JLabel();
         playerTagLeft = new JLabel();
+
+        messageFrame = new JFrame();
 
 
 
@@ -533,14 +550,19 @@ public class GUI extends JFrame {
 
         frame.add(gameTypeLabel);
         frame.add(questionLabel);
+        frame.add(playerTagLeft);
         frame.add(button1);
         frame.add(button2);
         frame.add(button3);
         frame.add(button4);
         frame.add(time_label);
+        time_label.setVisible(false);
 
     }
 
+    /**
+     * initializes components for a game of two players
+     */
     private void twoPlayersFrame(){
 
         button5 = new JButton();
@@ -642,14 +664,13 @@ public class GUI extends JFrame {
         frame.add(button7);
         frame.add(button8);
         // frame.add(player2NameLabel);
-        frame.add(playerTagLeft);
         frame.add(playerTagRight);
-        frame.add(backgroundImage2);
+        frame.add(backgroundImage1);
         //playerNameLabel.setVisible(true);
         //player2NameLabel.setVisible(true);
-        backgroundImage2.setVisible(false);
+        //backgroundImage2.setVisible(false);
         //betButton.setVisible(false);
-        time_label.setVisible(false);
+        //time_label.setVisible(false);
         //betTypeLabel.setVisible(false);
 
 
@@ -689,7 +710,11 @@ public class GUI extends JFrame {
     }
 
 
-
+    /**
+     * checks if player's buttons are enabled
+     * @return true if somebody has not answered
+     *         false if both have answered
+     */
     public boolean buttonsAreEnabled(){
         if (button1.isEnabled() || button5.isEnabled()) {
             return true;
@@ -698,6 +723,9 @@ public class GUI extends JFrame {
         }
     }
 
+    /**
+     * Shows points for each player
+     */
     public void showPoints(){
         playerTagLeft.setText("Player : "+players.get(0).getPlayerName()+", Points : "+ players.get(0).getPoints());
         if(players.size() == 2){
@@ -707,12 +735,16 @@ public class GUI extends JFrame {
 
     }
 
-
+    /**
+     * Checks if a player answered correctly also checks the type of game to add points accordingly
+     * @param player
+     * @throws InterruptedException
+     */
 
     public void checkAnswer(int player) throws InterruptedException {
         if(gameType.equals("Answer Correct")){
             if(players.get(player).getAnswer() == game.currentQuestion().getAnswer()){
-                addPoints(player);
+                players.get(player).addPoints(1000);
             }
 
             if(players.size() == 2 && playersHaveAnswered()==true){
@@ -723,11 +755,16 @@ public class GUI extends JFrame {
             }
 
             if(players.size()==1){
+                showPoints();
                 roundIs++;
                 updateFrame("Update Question");
                 enableButtons(1);
             }
-        }else if (gameType.equals("Bet")){
+        }else if(gameType.equals("Stop The Clock")){
+
+
+        }
+        else if (gameType.equals("Bet")){
             if(players.get(player).getAnswer() == game.currentQuestion().getAnswer()){
                 players.get(player).addPoints(players.get(player).getBet());
             }else{
@@ -745,6 +782,7 @@ public class GUI extends JFrame {
             }
 
             if(players.size()==1){
+                showPoints();
                 roundIs++;
                 frame.setVisible(false);
                 betFrame.setVisible(true);
@@ -755,6 +793,9 @@ public class GUI extends JFrame {
 
     }
 
+    /**
+    Checks if Player buttons are enabled so that it can inform an other method to load the next question
+     */
     public boolean playersHaveAnswered(){
         if(buttonsAreEnabled()){
             return false;
@@ -763,39 +804,28 @@ public class GUI extends JFrame {
         }
     }
 
-    public void addPoints(int player){
-        players.get(player).addPoints(bonusPoints(typeOfGame()));
-    }
 
-    public String typeOfGame(){
-        return "Correct Answer";
-    }
-
-    public int bonusPoints(String gameType){
-        if(gameType == "Bet"){
-            return 250;
-        }else if(gameType == "Correct Answer"){
-            return 1000;
-        }else if(gameType == "Stop The Clock"){
-            return game.stopTheClock();
-        }else {
-            return 0;
-        }
-    }
-
-
-
+    /**
+     * Starts the basic frame
+     */
     public void start(){
         setVisible(true);
     }
 
     //updates starting frame to player number choice and then starts the game's frame
 
+    /**
+     * updates frame with components to add players
+     */
     public void newGame(){
         updateFrame("Add Players");
 
     }
 
+    /**
+     * Different types of components are added to the frame depending on whichFrame
+     * @param whichFrame Has 3 different strings that manipulate a frame's components accordingly and/or add different frames to the interface
+     */
     public void updateFrame(String whichFrame) {
         if(whichFrame.equals("Add Players")){
             remove(newGameButton);remove(highScoreButton);remove(quitButton);remove(backgroundImage);
@@ -835,30 +865,26 @@ public class GUI extends JFrame {
                     e.printStackTrace();
                 }
             }else{
+                int player1Points = players.get(0).getPoints();
+                if(players.size()==2){
+                    int player2Points = players.get(1).getPoints();
+                    JOptionPane.showMessageDialog(messageFrame,players.get(1).getPlayerName()+" has " + player2Points+ " points");
+                }
+                JOptionPane.showMessageDialog(messageFrame,players.get(0).getPlayerName()+" has " + player1Points+ " points");
                 roundIs=1;
                 frame.setVisible(false);
                 if(gameType == "Bet"){
                     betFrame.setVisible(false);
                 }
-
                 setVisible(true);
-
             }
-
         }
-
         revalidate();
-
     }
 
-
-
-
-    public void initListeners(){
-
-
-    }
-
+    /**
+     * Updates basic frame's components with game type buttons
+     */
     private void selectGameType() {
 
         readyButton.setVisible(false);
@@ -870,9 +896,6 @@ public class GUI extends JFrame {
         gameType3Button.setVisible(true);
         revalidate();
 
-
-
-
     }
 
 
@@ -882,6 +905,11 @@ public class GUI extends JFrame {
         //logic for high score
     }
 
+
+    /**
+     * Updates the name of each player and their tags
+     * @param nextPlayer Shows which player is to be named
+     */
     public void playerToName(int nextPlayer) {
         if (nextPlayer <= playersToPlay) {
             nameLabel.setText("Player " + nextPlayer + " enter your nickname");
@@ -893,11 +921,11 @@ public class GUI extends JFrame {
 
             }else{
                 twoPlayersFrame();
-                playerTagRight.setBounds(0, 500, 400, 50);
+                playerTagRight.setBounds(0, 600, 400, 50);
                 playerTagRight.setFont(new Font("Arial", Font.ITALIC, 12));
                 playerTagRight.setText(players.get(1).getPlayerName());
             }
-            playerTagLeft.setBounds(0, 600, 400, 50);
+            playerTagLeft.setBounds(0, 500, 400, 50);
             playerTagLeft.setFont(new Font("Arial", Font.ITALIC, 12));
             playerTagLeft.setText(players.get(0).getPlayerName());
             selectGameType();
@@ -906,6 +934,10 @@ public class GUI extends JFrame {
         }
     }
 
+    /**
+     * Sets the bet for the players
+     * @param nextPlayer Shows which player bets next
+     */
     public void playerToBet(int nextPlayer){
         if(nextPlayer <= playersToPlay){
             numOfPlayersLabel.setText(players.get(nextPlayer-1).getPlayerName()+"'s bet");
