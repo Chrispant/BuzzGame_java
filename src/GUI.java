@@ -1,20 +1,16 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+
 
 public class GUI extends JFrame {
-    //newGame game;
 
-    private Game game;
-    private int playerAnswered = 0;
-    private int questionCounter = 0;
+
+    public final Game game;
     final private int maxNumOfPlayers;
     private int playersToPlay;
     private int roundIs = 1;
@@ -182,11 +178,10 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String nameOfPlayer = playerName.getText();
                 players.add(new Player(nameOfPlayer,0));
-                System.out.println(players.get(0).getPlayerName());
                 if(players.size()==2 && playersToPlay == 2){
-                    System.out.println(players.get(0).getPlayerName() + players.get(1).getPlayerName());
                     playerToName(3);
                 }else if(players.size()==1 && playersToPlay == 2){
+                    playerName.setText("Bella");
                     playerToName(2);
                 }else if(players.size()==1 && playersToPlay == 1){
                     playerToName(2);
@@ -398,9 +393,9 @@ public class GUI extends JFrame {
 
     /**
      * initializes components for Q&A frame
-     * @throws IOException
+     *
      */
-    public void initQandAComponents() throws IOException {
+    public void initQandAComponents() {
         //GUI Quiz components
         frame = new JFrame();
 
@@ -446,7 +441,7 @@ public class GUI extends JFrame {
         questionLabel.setWrapStyleWord(true);
         questionLabel.setBackground(new Color(25,25,25));
         questionLabel.setForeground(new Color(125,155,25));
-        questionLabel.setFont(new Font("MV Boli",Font.BOLD,25));
+        questionLabel.setFont(new Font("MV Boli",Font.BOLD,20));
         questionLabel.setBorder(BorderFactory.createBevelBorder(1));
         questionLabel.setEditable(false);
         questionLabel.setText("Question");////////////////////////////////////////////////////////
@@ -539,10 +534,10 @@ public class GUI extends JFrame {
 
         int x = 0;////////////////////////////////////////////////////////
         for(int i = 0; i<4; i++){
-            answer[i].setBounds(125,100+x,500,100);
+            answer[i].setBounds(125,100+x,800,100);
             answer[i].setBackground(new Color(50,50,50));
             answer[i].setForeground(new Color(55,55,55));
-            answer[i].setFont(new Font("MV Boli",Font.PLAIN,35));
+            answer[i].setFont(new Font("MV Boli",Font.PLAIN,25));
             answer[i].setText("Test");
             x += 100;
             frame.add(answer[i]);
@@ -716,11 +711,7 @@ public class GUI extends JFrame {
      *         false if both have answered
      */
     public boolean buttonsAreEnabled(){
-        if (button1.isEnabled() || button5.isEnabled()) {
-            return true;
-        } else {
-            return false;
-        }
+        return button1.isEnabled() || button5.isEnabled();
     }
 
     /**
@@ -738,16 +729,16 @@ public class GUI extends JFrame {
     /**
      * Checks if a player answered correctly also checks the type of game to add points accordingly
      * @param player
-     * @throws InterruptedException
+     * @throws InterruptedException No need for error handling if the player  follows the game's flow
      */
 
     public void checkAnswer(int player) throws InterruptedException {
         if(gameType.equals("Answer Correct")){
-            if(players.get(player).getAnswer() == game.currentQuestion().getAnswer()){
+            if(players.get(player).getAnswer().equals(game.currentQuestion().getAnswer())){
                 players.get(player).addPoints(1000);
             }
 
-            if(players.size() == 2 && playersHaveAnswered()==true){
+            if(players.size() == 2 && playersHaveAnswered()){
                 showPoints();
                 roundIs++;
                 updateFrame("Update Question");
@@ -765,13 +756,13 @@ public class GUI extends JFrame {
 
         }
         else if (gameType.equals("Bet")){
-            if(players.get(player).getAnswer() == game.currentQuestion().getAnswer()){
+            if(players.get(player).getAnswer().equals(game.currentQuestion().getAnswer())){
                 players.get(player).addPoints(players.get(player).getBet());
             }else{
                 players.get(player).removePoints(players.get(player).getBet());
             }
 
-            if(players.size() == 2 && playersHaveAnswered()==true){
+            if(players.size() == 2 && playersHaveAnswered()){
                 showPoints();
                 roundIs++;
                 frame.setVisible(false);
@@ -797,11 +788,7 @@ public class GUI extends JFrame {
     Checks if Player buttons are enabled so that it can inform an other method to load the next question
      */
     public boolean playersHaveAnswered(){
-        if(buttonsAreEnabled()){
-            return false;
-        }else{
-            return true;
-        }
+        return !buttonsAreEnabled();
     }
 
 
@@ -853,7 +840,7 @@ public class GUI extends JFrame {
 
         }
         if(whichFrame.equals("Update Question")){
-            if(roundIs<=4) {
+            if(roundIs<=5) {
                 try {
                     game.updateQuestion();
                     questionLabel.setText(game.currentQuestion().getQuestion());
@@ -873,10 +860,17 @@ public class GUI extends JFrame {
                 JOptionPane.showMessageDialog(messageFrame,players.get(0).getPlayerName()+" has " + player1Points+ " points");
                 roundIs=1;
                 frame.setVisible(false);
-                if(gameType == "Bet"){
+                if(gameType.equals("Bet")){
                     betFrame.setVisible(false);
+                    setVisible(true);
                 }
-                setVisible(true);
+
+                try {
+                    gameOver();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
             }
         }
         revalidate();
@@ -904,6 +898,7 @@ public class GUI extends JFrame {
     public void highScoreScreen(){
         //logic for high score
     }
+
 
 
     /**
@@ -946,6 +941,80 @@ public class GUI extends JFrame {
                 playersHaveBet = true;
             }
         }
+    }
+
+    private void gameOver() throws IOException {
+        if(!gameType2Button.isVisible() && !gameType1Button.isVisible()  ) {
+            String message;
+            String printMessage;
+            String name;
+            if (players.size() > 1) {
+                if (players.get(0).getPoints() > players.get(1).getPoints()) {
+                    name = players.get(0).getPlayerName();
+                    message = name + " has won with " + players.get(0).getPoints() + " points";
+                    printMessage = name + ":"+ players.get(0).getPoints();
+
+                } else {
+                    name = players.get(1).getPlayerName();
+                    message = name + " has won with " + players.get(1).getPoints() + " points";
+                    printMessage = name + ":"+ players.get(1).getPoints();
+                    // JOptionPane.showMessageDialog(messageFrame, players.get(1).getPlayerName() + " has won with "+ players.get(1).getPoints()+ " points");
+                }
+
+            } else {
+                name = players.get(0).getPlayerName();
+                message = name + " has collected  " + players.get(0).getPoints() + " points";
+                printMessage = name + " :" + players.get(0).getPoints();
+                //JOptionPane.showMessageDialog(messageFrame, players.get(0).getPlayerName() + " has collected  "+ players.get(0).getPoints()+ " points");
+            }
+            JOptionPane.showMessageDialog(messageFrame, message);
+
+            try (FileWriter fw = new FileWriter("Records/records.txt", true);
+                 BufferedWriter bw = new BufferedWriter(fw);
+                 PrintWriter out = new PrintWriter(bw)) {
+                FileReader fr = new FileReader("Records/records.txt");
+                BufferedReader br = new BufferedReader(fr);
+                StringBuffer sb = new StringBuffer();
+
+                //now read the file line by line...
+                String line;
+                while ((line = br.readLine()) != null) {
+                    if (line.contains(name)) {
+                        String newScore = printMessage.substring(printMessage.lastIndexOf(":") + 1);
+                        String oldScore = line.substring(line.lastIndexOf(":") + 1);
+                        System.out.println(newScore);
+                        int a = Integer.parseInt(newScore);
+                        int b = Integer.parseInt(oldScore);
+                        if (a > b) {
+                            String newContent = line.replaceAll(oldScore, newScore);
+                            fw.write(newContent);
+
+                        }
+                    }
+                }
+
+                fr.close();
+                System.out.println("Contents : ");
+                System.out.println(sb.toString());
+
+
+            } catch (IOException e) {
+                System.out.println("An error occurred.");
+                e.printStackTrace();
+            }
+            System.exit(1);
+        }
+/**
+            String str = "GAME FINISHED, total points gathered for player: " + game.getCurrentPlayer().getPlayerName() + " ,points: " + game.getCurrentPlayer().getPoints();
+            FileOutputStream outputStream = new FileOutputStream(myObj);
+            byte[] strToBytes = str.getBytes();
+            outputStream.write(strToBytes);
+
+            outputStream.close();
+
+*/
+
+
     }
 
 

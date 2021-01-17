@@ -1,5 +1,7 @@
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -14,27 +16,18 @@ public class Game {
     private ArrayList<Question> questionSet2;
     private ArrayList<Question> questionSet3, questionSet4, questionSet5;
     private final HashMap<String, ArrayList<Question>> questionsPerCategory;
-    private final ArrayList<Player> players;
-    private final ArrayList<Round> rounds;
     private String category;
 
     /**
      * Constructor of class game. It initialises all properties of this class. It creates hard-coded questions with the corresponding answers. After it creates the questions, a new set of Questions objects
-     * are created and saved in the corresponding properties questionSet and questionSet2.
+     * are created and saved in the corresponding properties questionSet.
      */
     public Game() throws IOException {
-        //Method for future use(Make each question correspond to a single category) use ArrayList or HashSet?
         questionsPerCategory = new HashMap<String, ArrayList<Question>>();
 
         initQuestions();
         initRoundCategories();
 
-        players = new ArrayList<Player>();
-
-        rounds = new ArrayList<Round>();
-        rounds.add(new Round("Σωστή Απάντηση"));
-        rounds.add(new Round("Ποντάρισμα"));
-        Collections.shuffle(rounds);
     }
 
 
@@ -132,115 +125,7 @@ public class Game {
 
     }
 
-    /**
-     * Clear from questionSet or questionSet2 one question based on position and the category.
-     *
-     * @param counter  the index of the question that is going to be removed
-     * @param category the category that the question belongs
-     */
-    private void clearQuestionSet(int counter, String category) {
-        //remove question from array
-        if (category.equals("Επιστήμη")) {
-            if (questionSet.size() > 1)
-                questionSet.remove(counter);
-            else {
-                questionSet.remove(0);
-            }
-        } else {
-            if (questionSet2.size() > 1) {
-                questionSet2.remove(counter);
-            } else {
-                questionSet2.remove(0);
-            }
 
-        }
-    }
-
-
-    /**
-     * Method startQuestion starts the game  Buzz! Ouiz World. After it receives the round type, gets category of the questions and print them to the user to inform him which type of question he will have
-     * to answer.
-     *
-     * @param roundType int value that represents the round type, possible values 0 -> Σωστή Απάντηση, 1 ->Ποντάρισμα
-     * @throws InterruptedException
-     */
-
-
-
-    /**
-     * Method addPlayer initialises the players for the game. It can work with a single player or multiple players.
-     */
-    public void addPlayers() {
-
-
-    }
-
-    public int stopTheClock(){
-        return 0;
-    }
-
-    /**
-     * @param category index that is going to be used for returning the appropriate String category
-     * @return
-     */
-
-
-    /**
-     * Method gameOver prints to the console the points of each player after the game is completed
-     */
-    public void gameOver() {
-        System.out.println("\nGame is over!");
-        for (int player = 0; player < players.size(); player++) {
-            System.out.println(players.get(player).getPlayerName() + " has " + players.get(player).getPoints() + " points");
-        }
-
-        int x = players.size();
-        if (x < 3) {
-            if (x == 1) {
-                System.out.println(players.get(0).getPlayerName() + " wins!");
-            } else if (x == 2) {
-                if (players.get(0).getPoints() > players.get(1).getPoints()) {
-                    System.out.println(players.get(0).getPlayerName() + " wins!");
-                } else if (players.get(0).getPoints() < players.get(1).getPoints()) {
-                    System.out.println(players.get(1).getPlayerName() + " wins!");
-                } else {
-                    System.out.println("TIE!");
-                }
-            }
-        }
-
-
-    }
-
-
-    /**
-     * Method bet represents the betting process of the game. The player can only bet 250,500,750,1000 points other option is Unavailable
-     *
-     * @return the bet that the player has decided to play
-     */
-
-
-
-    /**
-     * Method answer represents the answer that the user gives from the keyboard. Possible answers are 1-4 other answer is unavailable.
-     *
-     * @return the answer of the player
-     */
-    public int answer() {
-        Scanner scanner = new Scanner(System.in);
-        int answer = scanner.nextInt();
-        switch (answer) {
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-                return answer;
-            default:
-                System.out.println("Unavailable answer please try again");
-                return answer();
-
-        }
-    }
 
     public void updateQuestion(){
         Question newQuestion  = null;
