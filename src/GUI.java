@@ -7,7 +7,7 @@ import java.io.*;
 import java.util.*;
 
 
-public class GUI extends JFrame {
+public class  GUI extends JFrame {
 
 
     public final Game game;
@@ -204,7 +204,7 @@ public class GUI extends JFrame {
                 gameType = "Answer Correct";
                 updateFrame("Update Question");
                 frame.setVisible(true);
-                gameType1Button.setVisible(false);
+                gameType1Button.setEnabled(false);
             }
         });
 
@@ -222,7 +222,7 @@ public class GUI extends JFrame {
                 playerToBet(1);
                 betFrame.setVisible(true);
                 setVisible(false);
-                gameType2Button.setVisible(false);
+                gameType2Button.setEnabled(false);
 
             }
         });
@@ -944,7 +944,7 @@ public class GUI extends JFrame {
     }
 
     private void gameOver() throws IOException {
-        if(!gameType2Button.isVisible() && !gameType1Button.isVisible()  ) {
+        if(!gameType2Button.isEnabled() && !gameType1Button.isEnabled()  ) {
             String message;
             String printMessage;
             String name;
